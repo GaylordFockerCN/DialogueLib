@@ -1,6 +1,6 @@
-package com.p1nero.dialogue_lib.network.packet;
+package net.p1nero.dialogue_lib.network.packet;
 
-import com.p1nero.dialogue_lib.entity.Dialogueable;
+import net.p1nero.dialogue_lib.entity.Dialogueable;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 

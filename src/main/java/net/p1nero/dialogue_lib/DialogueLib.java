@@ -1,17 +1,14 @@
-package com.p1nero.dialogue_lib;
+package net.p1nero.dialogue_lib;
 
-import com.p1nero.demo.RhinoEntity;
-import com.p1nero.demo.RhinoModel;
-import com.p1nero.demo.RhinoRenderer;
-import com.p1nero.dialogue_lib.network.PacketHandler;
-import net.minecraft.client.model.BoatModel;
+import net.p1nero.demo.RhinoEntity;
+import net.p1nero.demo.RhinoModel;
+import net.p1nero.demo.RhinoRenderer;
+import net.p1nero.dialogue_lib.network.PacketHandler;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacements;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.FlowerPotBlock;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -26,8 +23,6 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
-
-import static com.p1nero.demo.RhinoRenderer.RHINO_LAYER;
 
 @Mod(DialogueLib.MOD_ID)
 public class DialogueLib
@@ -54,7 +49,7 @@ public class DialogueLib
     {
         @SubscribeEvent
         public static void registerLayer(EntityRenderersEvent.RegisterLayerDefinitions event) {
-            event.registerLayerDefinition(RHINO_LAYER, RhinoModel::createBodyLayer);
+            event.registerLayerDefinition(RhinoRenderer.RHINO_LAYER, RhinoModel::createBodyLayer);
         }
 
         @SubscribeEvent

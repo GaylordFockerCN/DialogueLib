@@ -1,4 +1,4 @@
-package com.p1nero.demo;
+package net.p1nero.demo;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

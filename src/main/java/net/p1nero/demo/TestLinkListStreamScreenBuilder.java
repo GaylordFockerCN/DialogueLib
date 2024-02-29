@@ -1,11 +1,10 @@
-package com.p1nero.demo;
+package net.p1nero.demo;
 
-import com.p1nero.dialogue_lib.screen.LinkListStreamDialogueScreenBuilder;
+import net.p1nero.dialogue_lib.screen.LinkListStreamDialogueScreenBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 
-import static com.p1nero.dialogue_lib.DialogueLib.SAMPLE;
+import static net.p1nero.dialogue_lib.DialogueLib.SAMPLE;
 
 public class TestLinkListStreamScreenBuilder extends LinkListStreamDialogueScreenBuilder {
     public TestLinkListStreamScreenBuilder(Entity entity) {

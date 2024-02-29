@@ -1,9 +1,9 @@
-package com.p1nero.dialogue_lib.network;
+package net.p1nero.dialogue_lib.network;
 
-import com.p1nero.dialogue_lib.DialogueLib;
-import com.p1nero.dialogue_lib.network.packet.BasePacket;
-import com.p1nero.dialogue_lib.network.packet.NPCDialoguePacket;
-import com.p1nero.dialogue_lib.network.packet.NpcPlayerInteractPacket;
+import net.p1nero.dialogue_lib.DialogueLib;
+import net.p1nero.dialogue_lib.network.packet.BasePacket;
+import net.p1nero.dialogue_lib.network.packet.NPCDialoguePacket;
+import net.p1nero.dialogue_lib.network.packet.NpcPlayerInteractPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkRegistry;

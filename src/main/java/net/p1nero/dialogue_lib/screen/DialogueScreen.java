@@ -1,12 +1,12 @@
-package com.p1nero.dialogue_lib.screen;
+package net.p1nero.dialogue_lib.screen;
 
-import com.p1nero.dialogue_lib.DialogueLib;
-import com.p1nero.dialogue_lib.entity.Dialogueable;
-import com.p1nero.dialogue_lib.network.PacketHandler;
-import com.p1nero.dialogue_lib.network.PacketRelay;
-import com.p1nero.dialogue_lib.network.packet.NpcPlayerInteractPacket;
-import com.p1nero.dialogue_lib.screen.component.DialogueAnswerComponent;
-import com.p1nero.dialogue_lib.screen.component.DialogueChoiceComponent;
+import net.p1nero.dialogue_lib.DialogueLib;
+import net.p1nero.dialogue_lib.entity.Dialogueable;
+import net.p1nero.dialogue_lib.network.PacketHandler;
+import net.p1nero.dialogue_lib.network.PacketRelay;
+import net.p1nero.dialogue_lib.network.packet.NpcPlayerInteractPacket;
+import net.p1nero.dialogue_lib.screen.component.DialogueAnswerComponent;
+import net.p1nero.dialogue_lib.screen.component.DialogueChoiceComponent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -18,6 +18,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.p1nero.dialogue_lib.util.DialogueComponentBuilder;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -95,7 +96,7 @@ public class DialogueScreen extends Screen {
     /**
      * Sends an NPC interaction to the server, which is sent through a packet to be handled in {@link Dialogueable#handleNpcInteraction(Player, byte)}.
      * @param interactionID A code for which interaction was performed on the client.<br>
-     * @see com.p1nero.dialogue_lib.network.packet.NpcPlayerInteractPacket
+     * @see NpcPlayerInteractPacket
      */
     protected void finishChat(byte interactionID) {
         PacketRelay.sendToServer(PacketHandler.INSTANCE, new NpcPlayerInteractPacket(this.entity.getId(), interactionID));
