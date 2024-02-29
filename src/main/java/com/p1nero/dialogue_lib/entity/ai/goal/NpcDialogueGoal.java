@@ -1,6 +1,6 @@
 package com.p1nero.dialogue_lib.entity.ai.goal;
 
-import com.p1nero.dialogue_lib.entity.NpcDialogue;
+import com.p1nero.dialogue_lib.entity.Dialogueable;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
@@ -11,7 +11,7 @@ import java.util.EnumSet;
 /**
  * This goal makes an NPC stop in place when talking with a player.
  */
-public class NpcDialogueGoal<T extends Mob & NpcDialogue> extends LookAtPlayerGoal {
+public class NpcDialogueGoal<T extends Mob & Dialogueable> extends LookAtPlayerGoal {
     private final T npc;
 
     public NpcDialogueGoal(T npc) {

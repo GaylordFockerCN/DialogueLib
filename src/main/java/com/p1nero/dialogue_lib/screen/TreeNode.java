@@ -31,10 +31,16 @@ public class TreeNode {
     /**
      * 返回自己以方便构造
     * */
-    public TreeNode addOption(Component answer, Component option) {
+    public TreeNode addLeaf(Component option, byte returnValue) {
+        options.add(new TreeNode.FinalNode(option, returnValue));
+        return this;
+    }
+
+    public TreeNode addChild(Component answer, Component option) {
         options.add(new TreeNode(answer, option));
         return this;
     }
+
     public TreeNode addChild(TreeNode node) {
         options.add(node);
         return this;

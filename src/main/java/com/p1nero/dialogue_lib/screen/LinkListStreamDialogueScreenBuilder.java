@@ -1,8 +1,8 @@
 package com.p1nero.dialogue_lib.screen;
 
+import com.p1nero.dialogue_lib.entity.Dialogueable;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
@@ -16,8 +16,6 @@ import java.util.List;
  */
 public class LinkListStreamDialogueScreenBuilder extends StreamDialogueScreenBuilder{
 
-    private TreeNode answerRoot;
-
     private TreeNode answerNode;
 
     public LinkListStreamDialogueScreenBuilder(Entity entity) {
@@ -27,8 +25,8 @@ public class LinkListStreamDialogueScreenBuilder extends StreamDialogueScreenBui
     /**
      * 重写这个是为了让你记得这才是Screen真正被调用的初始化的地方。建议在这里作些判断再调用start。
     * */
-    public LinkListStreamDialogueScreenBuilder init() {
-        return this;
+    @Override
+    protected void init() {
     }
 
     /**
@@ -43,7 +41,7 @@ public class LinkListStreamDialogueScreenBuilder extends StreamDialogueScreenBui
 
     /**
      * @param finalOption 最后显示的话
-     * @param returnValue 选项的返回值，默认返回0。用于处理 {@link com.p1nero.dialogue_lib.entity.NpcDialogue#handleNpcInteraction(Player, byte)}
+     * @param returnValue 选项的返回值，默认返回0。用于处理 {@link Dialogueable#handleNpcInteraction(Player, byte)}
      */
     public LinkListStreamDialogueScreenBuilder addFinalChoice(Component finalOption, byte returnValue){
         if(answerNode == null)
@@ -60,7 +58,7 @@ public class LinkListStreamDialogueScreenBuilder extends StreamDialogueScreenBui
     public LinkListStreamDialogueScreenBuilder addChoice(Component option, Component answer){
         if(answerNode == null)
             return null;
-        answerNode.addOption(answer,option);
+        answerNode.addChild(answer,option);
 
         //直接下一个
         List<TreeNode> list = answerNode.getChildren();

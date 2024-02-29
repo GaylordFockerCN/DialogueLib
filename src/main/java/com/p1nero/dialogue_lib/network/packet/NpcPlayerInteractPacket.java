@@ -1,6 +1,6 @@
 package com.p1nero.dialogue_lib.network.packet;
 
-import com.gaboj1.tcr.entity.NpcDialogue;
+import com.p1nero.dialogue_lib.entity.Dialogueable;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 
@@ -22,7 +22,7 @@ public record NpcPlayerInteractPacket(int entityID, byte interactionID) implemen
 
     @Override
     public void execute(@Nullable Player playerEntity) {
-        if (playerEntity != null && playerEntity.getServer() != null && playerEntity.level().getEntity(this.entityID()) instanceof NpcDialogue npc) {
+        if (playerEntity != null && playerEntity.getServer() != null && playerEntity.level().getEntity(this.entityID()) instanceof Dialogueable npc) {
             npc.handleNpcInteraction(playerEntity, this.interactionID());
         }
     }

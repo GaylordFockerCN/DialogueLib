@@ -1,6 +1,5 @@
 package com.p1nero.dialogue_lib.entity;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -11,7 +10,9 @@ import javax.annotation.Nullable;
  * Interface for any NPC that can be engaged in conversation.
  * Never implement this with a class that isn't an entity!
  */
-public interface NpcDialogue {
+public interface Dialogueable {
+
+    Player player = null;
     /**
      * This method shouldn't be used on the server.
      */
@@ -32,7 +33,5 @@ public interface NpcDialogue {
      */
     @Nullable
     Player getConversingPlayer();
-    @Nullable
-    void chat(Component component);
 
 }

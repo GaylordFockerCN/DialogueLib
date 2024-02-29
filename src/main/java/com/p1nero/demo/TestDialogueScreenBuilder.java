@@ -11,19 +11,19 @@ public class TestDialogueScreenBuilder extends StreamDialogueScreenBuilder {
     }
 
     @Override
-    public StreamDialogueScreenBuilder init() {
+    protected void init() {
 
-        answerRoot = new TreeNode(Component.literal("根节点"))
-                .addChild(new TreeNode(Component.literal("子节点1"), Component.literal("选项1"))
-                        .addOption(Component.literal("子节点1的子节点1"), Component.literal("选项1-1"))
-                        .addOption(Component.literal("子节点1的子节点2"), Component.literal("选项1-2"))
+        answerRoot = new TreeNode(Component.literal("root根节点"))
+                .addChild(new TreeNode(Component.literal("child子节点1"), Component.literal("option选项1"))
+                        .addLeaf(Component.literal("option选项1-1"), (byte) 0)
+                        .addLeaf(Component.literal("option选项1-2"), (byte) 1)
                 )
-                .addChild(new TreeNode(Component.literal("子节点2"), Component.literal("选项2"))
-                        .addChild(new TreeNode(Component.literal("子节点2的子节点1"), Component.literal("选项2-1"))
-                                .addOption(Component.literal("子节点2的子节点1的子节点1"), Component.literal("选项2-1-1"))
+                .addChild(new TreeNode(Component.literal("child子节点2"), Component.literal("option选项2"))
+                        .addChild(new TreeNode(Component.literal("child2's child 子节点2的子节点1"), Component.literal("option选项2-1"))
+                                .addLeaf(Component.literal("option选项2-1-1"), (byte) 2)
                         )
+
                 );
 
-        return this;
     }
 }

@@ -13,7 +13,7 @@ public class StreamDialogueScreenBuilder {
 
     protected Entity entity;
 
-    protected DialogueScreen screen;//封装一下防止出现一堆杂七杂八的方法
+    protected DialogueScreen screen;//封装一下防止出现一堆杂七杂八的方法，但是似乎阻止了ECS关窗口（onClose失效）
     protected TreeNode answerRoot;
 
     public StreamDialogueScreenBuilder(Entity entity) {
@@ -25,8 +25,7 @@ public class StreamDialogueScreenBuilder {
     /**
      * 重写这个是为了让你记得这才是Screen真正被调用的初始化的地方。建议在这里作些判断再调用start。
      * */
-    public StreamDialogueScreenBuilder init() {
-        return this;
+    protected void init(){
     }
 
     /**
@@ -69,4 +68,9 @@ public class StreamDialogueScreenBuilder {
             screen.setupDialogueChoices(choiceList);
         };
     }
+
+    public void onClose() {
+        this.screen.onClose();
+    }
+
 }

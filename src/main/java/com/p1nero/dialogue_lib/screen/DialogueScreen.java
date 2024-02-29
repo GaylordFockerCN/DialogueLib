@@ -1,7 +1,7 @@
 package com.p1nero.dialogue_lib.screen;
 
 import com.p1nero.dialogue_lib.DialogueLib;
-import com.p1nero.dialogue_lib.entity.NpcDialogue;
+import com.p1nero.dialogue_lib.entity.Dialogueable;
 import com.p1nero.dialogue_lib.network.PacketHandler;
 import com.p1nero.dialogue_lib.network.PacketRelay;
 import com.p1nero.dialogue_lib.network.packet.NpcPlayerInteractPacket;
@@ -24,7 +24,7 @@ import java.util.List;
 
 /**
  * 改编自theAether 的 ValkyrieQueenDialogueScreen
- * 搬运了相关类
+ * 并搬运了相关类
  */
 public class DialogueScreen extends Screen {
     public static final ResourceLocation MY_BACKGROUND_LOCATION = new ResourceLocation(DialogueLib.MOD_ID,"textures/gui/background.png");
@@ -93,7 +93,7 @@ public class DialogueScreen extends Screen {
     }
 
     /**
-     * Sends an NPC interaction to the server, which is sent through a packet to be handled in {@link NpcDialogue#handleNpcInteraction(Player, byte)}.
+     * Sends an NPC interaction to the server, which is sent through a packet to be handled in {@link Dialogueable#handleNpcInteraction(Player, byte)}.
      * @param interactionID A code for which interaction was performed on the client.<br>
      * @see com.p1nero.dialogue_lib.network.packet.NpcPlayerInteractPacket
      */
@@ -133,6 +133,8 @@ public class DialogueScreen extends Screen {
     }
 
     @Override
-    public void onClose() {}
+    public void onClose() {
+
+    }
 
 }
