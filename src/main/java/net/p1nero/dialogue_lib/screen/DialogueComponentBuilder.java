@@ -1,4 +1,4 @@
-package com.p1nero.dialogue_lib.screen;
+package net.p1nero.dialogue_lib.screen;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;

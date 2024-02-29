@@ -1,4 +1,4 @@
-package com.p1nero.dialogue_lib.network;
+package net.p1nero.dialogue_lib.network;
 
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;

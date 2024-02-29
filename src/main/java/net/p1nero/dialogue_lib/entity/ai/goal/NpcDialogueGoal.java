@@ -1,6 +1,6 @@
-package com.p1nero.dialogue_lib.entity.ai.goal;
+package net.p1nero.dialogue_lib.entity.ai.goal;
 
-import com.p1nero.dialogue_lib.entity.Dialogueable;
+import net.p1nero.dialogue_lib.entity.Dialogueable;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;

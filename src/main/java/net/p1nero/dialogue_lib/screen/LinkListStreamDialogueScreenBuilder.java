@@ -1,6 +1,6 @@
-package com.p1nero.dialogue_lib.screen;
+package net.p1nero.dialogue_lib.screen;
 
-import com.p1nero.dialogue_lib.entity.Dialogueable;
+import net.p1nero.dialogue_lib.entity.Dialogueable;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;

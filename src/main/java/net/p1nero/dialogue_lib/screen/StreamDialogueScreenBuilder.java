@@ -1,10 +1,9 @@
-package com.p1nero.dialogue_lib.screen;
+package net.p1nero.dialogue_lib.screen;
 
-import com.p1nero.dialogue_lib.screen.component.DialogueChoiceComponent;
+import net.p1nero.dialogue_lib.screen.component.DialogueChoiceComponent;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 
 import java.util.ArrayList;
 import java.util.List;

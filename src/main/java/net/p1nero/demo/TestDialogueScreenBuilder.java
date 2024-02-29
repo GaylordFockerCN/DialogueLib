@@ -1,7 +1,7 @@
-package com.p1nero.demo;
+package net.p1nero.demo;
 
-import com.p1nero.dialogue_lib.screen.StreamDialogueScreenBuilder;
-import com.p1nero.dialogue_lib.screen.TreeNode;
+import net.p1nero.dialogue_lib.screen.StreamDialogueScreenBuilder;
+import net.p1nero.dialogue_lib.screen.TreeNode;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 

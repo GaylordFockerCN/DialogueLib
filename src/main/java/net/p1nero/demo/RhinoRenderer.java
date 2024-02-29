@@ -1,7 +1,7 @@
-package com.p1nero.demo;
+package net.p1nero.demo;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.p1nero.dialogue_lib.DialogueLib;
+import net.p1nero.dialogue_lib.DialogueLib;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;

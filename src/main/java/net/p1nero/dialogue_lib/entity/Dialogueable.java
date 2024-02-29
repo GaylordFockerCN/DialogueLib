@@ -1,4 +1,4 @@
-package com.p1nero.dialogue_lib.entity;
+package net.p1nero.dialogue_lib.entity;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;

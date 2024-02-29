@@ -1,13 +1,12 @@
-package com.p1nero.demo;
+package net.p1nero.demo;
 
-import com.p1nero.dialogue_lib.entity.Dialogueable;
-import com.p1nero.dialogue_lib.entity.ai.goal.NpcDialogueGoal;
-import com.p1nero.dialogue_lib.network.PacketHandler;
-import com.p1nero.dialogue_lib.network.PacketRelay;
-import com.p1nero.dialogue_lib.network.packet.NPCDialoguePacket;
-import com.p1nero.dialogue_lib.screen.DialogueComponentBuilder;
+import net.p1nero.dialogue_lib.entity.Dialogueable;
+import net.p1nero.dialogue_lib.entity.ai.goal.NpcDialogueGoal;
+import net.p1nero.dialogue_lib.network.PacketHandler;
+import net.p1nero.dialogue_lib.network.PacketRelay;
+import net.p1nero.dialogue_lib.network.packet.NPCDialoguePacket;
+import net.p1nero.dialogue_lib.screen.DialogueComponentBuilder;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;

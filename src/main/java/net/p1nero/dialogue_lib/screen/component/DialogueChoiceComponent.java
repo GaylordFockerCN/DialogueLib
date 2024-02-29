@@ -1,4 +1,4 @@
-package com.p1nero.dialogue_lib.screen.component;
+package net.p1nero.dialogue_lib.screen.component;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
