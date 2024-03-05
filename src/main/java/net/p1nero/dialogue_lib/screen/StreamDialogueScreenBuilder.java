@@ -49,11 +49,22 @@ public class StreamDialogueScreenBuilder {
 
         //如果是终止按钮则实现返回效果
         if(node instanceof TreeNode.FinalNode finalNode){
-            return button -> {screen.finishChat(finalNode.getReturnValue());};
+            return button -> {
+                screen.finishChat(finalNode.getReturnValue());
+                if(finalNode.canExecute()){
+                    finalNode.execute();
+                }
+            };
         }
 
         //否则继续递归创建按钮
         return button -> {
+            if(node.canExecute()){
+                node.execute();
+            }
+            if(node.canExecuteCode()){
+                screen.execute(node.getExecuteValue());
+            }
             screen.setDialogueAnswer(node.getAnswer());
             List<DialogueChoiceComponent> choiceList = new ArrayList<>();
             List<TreeNode> options = node.getChildren();

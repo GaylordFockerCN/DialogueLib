@@ -103,6 +103,17 @@ public class DialogueScreen extends Screen {
         super.onClose();
     }
 
+    /**
+     * Sends an NPC interaction to the server, which is sent through a packet to be handled in {@link Dialogueable#handleNpcInteraction(Player, byte)}.
+     * 但是不关闭窗口。
+     * NOTE 在handle的时候不要将玩家设为空！！
+     * @param interactionID A code for which interaction was performed on the client.<br>
+     * @see NpcPlayerInteractPacket
+     */
+    protected void execute(byte interactionID) {
+        PacketRelay.sendToServer(PacketHandler.INSTANCE, new NpcPlayerInteractPacket(this.entity.getId(), interactionID));
+    }
+
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(guiGraphics);

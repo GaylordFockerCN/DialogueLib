@@ -14,7 +14,7 @@ public class TestDialogueScreenBuilder extends StreamDialogueScreenBuilder {
     protected void init() {
 
         answerRoot = new TreeNode(Component.literal("root根节点"))
-                .addChild(new TreeNode(Component.literal("child子节点1"), Component.literal("option选项1"))
+                .addChild(new TreeNode(Component.literal("child子节点1"), Component.literal("option选项1")).execute(()->{})
                         .addLeaf(Component.literal("option选项1-1"), (byte) 0)
                         .addLeaf(Component.literal("option选项1-2"), (byte) 1)
                 )

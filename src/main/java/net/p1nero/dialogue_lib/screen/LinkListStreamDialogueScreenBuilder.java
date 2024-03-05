@@ -69,4 +69,21 @@ public class LinkListStreamDialogueScreenBuilder extends StreamDialogueScreenBui
         return this;
     }
 
+    /**
+     * 按下按钮后执行
+     */
+    public LinkListStreamDialogueScreenBuilder thenExecute(Runnable runnable){
+        if(answerNode == null)
+            return null;
+        answerNode.execute(runnable);
+        return this;
+    }
+    /**
+     * 按下按钮后执行
+     */
+    public LinkListStreamDialogueScreenBuilder thenExecute(byte returnValue){
+        answerNode.execute(returnValue);
+        return this;
+    }
+
 }

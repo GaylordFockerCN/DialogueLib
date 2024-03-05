@@ -6,6 +6,7 @@ import net.p1nero.dialogue_lib.entity.ai.goal.NpcDialogueGoal;
 import net.p1nero.dialogue_lib.network.PacketHandler;
 import net.p1nero.dialogue_lib.network.PacketRelay;
 import net.p1nero.dialogue_lib.network.packet.NPCDialoguePacket;
+import net.p1nero.dialogue_lib.screen.LinkListStreamDialogueScreenBuilder;
 import net.p1nero.dialogue_lib.util.DialogueComponentBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -91,6 +92,10 @@ public class RhinoEntity extends Mob implements Dialogueable {
             Minecraft.getInstance().setScreen(new TestLinkListStreamScreenBuilder(this).build());
         }
 
+//        或者在这里执行构建而不在init执行构建，这里可以实现更多判断
+//        LinkListStreamDialogueScreenBuilder screenBuilder = new LinkListStreamDialogueScreenBuilder(this);
+//        screenBuilder.start().thenExecute().addChoice().addFinalChoice();
+
     }
 
     @Override
@@ -108,6 +113,10 @@ public class RhinoEntity extends Mob implements Dialogueable {
             case 3:
                 this.chat(Component.literal("Bye~"));
                 break;
+            //要执行的代码，thenExecute的内容，执行后记得return
+            case 4:
+                this.chat(Component.literal("Executed!!!!!"));
+                return;
         }
         this.setConversingPlayer(null);
     }

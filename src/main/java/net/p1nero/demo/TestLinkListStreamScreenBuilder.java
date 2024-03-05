@@ -15,6 +15,7 @@ public class TestLinkListStreamScreenBuilder extends LinkListStreamDialogueScree
     protected void init() {
         this.start(Component.literal("hello！"))
             .addChoice(Component.literal("You know你知道吗"),Component.literal("Huh嗯？"))
+            .thenExecute((byte) 4)
             .addChoice(Component.literal("你真的不知道吗"),Component.literal("嗯哼？"))
             .addChoice(Component.literal("你真的真的知道吗"),Component.literal("嗯哼哼？"))
             .addFinalChoice(Component.literal("Bye"),(byte)3);
