@@ -1,35 +1,33 @@
 package com.p1nero.dialog_lib.api;
 
+import com.p1nero.dialog_lib.network.PacketHandler;
+import com.p1nero.dialog_lib.network.PacketRelay;
+import com.p1nero.dialog_lib.network.packet.clientbound.NPCDialoguePacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
-/**
- * Interface for any NPC that can be engaged in conversation.
- * Never implement this with a class that isn't an entity!
- */
+
 public interface NpcDialogue {
-    /**
-     * This method shouldn't be used on the server.
-     */
     @OnlyIn(Dist.CLIENT)
     void openDialogueScreen(CompoundTag senderData);
 
-    /**
-     * Handles an NPC reaction on the server.
-     * @param player The interacting {@link Player}.
-     * @param interactionID The {@link Byte} ID corresponding to the option the player chose.
-     */
-    void handleNpcInteraction(ServerPlayer player, byte interactionID);
+    void handleNpcInteraction(ServerPlayer player, int interactionID);
 
     void setConversingPlayer(@Nullable Player player);
 
-    /**
-     * These methods are used to store and retrieve the player whom the NPC is conversing with.
-     */
+    default void sendDialogTo(ServerPlayer serverPlayer, CompoundTag data) {
+        PacketRelay.sendToPlayer(PacketHandler.INSTANCE, new NPCDialoguePacket(((LivingEntity) this).getId(), data), serverPlayer);
+    }
+
+    default void sendDialogTo(ServerPlayer serverPlayer) {
+        sendDialogTo(serverPlayer, new CompoundTag());
+    }
+
     @Nullable
     Player getConversingPlayer();
 

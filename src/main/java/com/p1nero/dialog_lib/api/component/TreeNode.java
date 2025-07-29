@@ -16,11 +16,11 @@ public class TreeNode {
     @Nullable
     protected Consumer<DialogueScreen> screenConsumer;//要执行的操作
 
-    public byte getExecuteValue() {
+    public int getExecuteValue() {
         return executeValue;
     }
 
-    protected byte executeValue = (byte) -114514;//要执行的操作代码 ，114514 代表无操作
+    protected int executeValue = -114514;//要执行的操作代码 ，114514 代表无操作
 
     protected List<TreeNode> options = new ArrayList<>();
 
@@ -36,7 +36,7 @@ public class TreeNode {
         this.option = option;
     }
 
-    public TreeNode addLeaf(Component option, byte returnValue) {
+    public TreeNode addLeaf(Component option, int returnValue) {
         options.add(new FinalNode(option, returnValue));
         return this;
     }
@@ -45,7 +45,7 @@ public class TreeNode {
      * 默认的情况。负数不会被处理
      */
     public TreeNode addLeaf(Component option) {
-        options.add(new FinalNode(option, (byte) -1));
+        options.add(new FinalNode(option, -1));
         return this;
     }
 
@@ -85,7 +85,7 @@ public class TreeNode {
     }
 
     public boolean canExecuteCode(){
-        return executeValue != (byte)-114514;
+        return executeValue != -114514;
     }
 
     public Component getAnswer() {
@@ -101,14 +101,14 @@ public class TreeNode {
     }
 
     public static class FinalNode extends TreeNode{
-        private final byte returnValue;
-        public FinalNode(Component finalOption, byte returnValue) {
+        private final int returnValue;
+        public FinalNode(Component finalOption, int returnValue) {
             super(Component.empty());//最终节点不需要回答
             this.option = finalOption;
             this.returnValue = returnValue;
         }
 
-        public byte getReturnValue(){
+        public int getReturnValue(){
             return returnValue;
         }
 

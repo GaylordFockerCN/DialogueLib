@@ -9,20 +9,17 @@ import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nullable;
 
-/**
- * This packet is sent to the server whenever the player chooses an important action in the NPC dialogue.
- */
-public record NpcPlayerInteractPacket(int entityID, byte interactionID) implements BasePacket {
+public record NpcPlayerInteractPacket(int entityID, int interactionID) implements BasePacket {
     public static final int NO_ENTITY = -1;
 
     @Override
     public void encode(FriendlyByteBuf buf) {
         buf.writeInt(this.entityID());
-        buf.writeByte(this.interactionID());
+        buf.writeInt(this.interactionID());
     }
 
     public static NpcPlayerInteractPacket decode(FriendlyByteBuf buf) {
-        return new NpcPlayerInteractPacket(buf.readInt(), buf.readByte());
+        return new NpcPlayerInteractPacket(buf.readInt(), buf.readInt());
     }
 
     @Override

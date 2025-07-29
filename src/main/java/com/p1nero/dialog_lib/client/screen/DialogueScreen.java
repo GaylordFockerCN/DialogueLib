@@ -178,14 +178,9 @@ public class DialogueScreen extends Screen {
 
     /**
      * Sends an NPC interaction to the server, which is sent through a packet to be handled in {@link NpcDialogue#handleNpcInteraction(ServerPlayer, byte)}.
-     * @param interactionID A code for which interaction was performed on the client.<br>
-     *                      0 - "What can you tell me about this place?"<br>
-     *                      1 - "I wish to fight you!"<br>
-     *                      2 - "On second thought, I'd rather not."<br>
-     *                      3 - "Nevermind."<br>
      * @see NpcPlayerInteractPacket
      */
-    protected void finishChat(byte interactionID) {
+    protected void finishChat(int interactionID) {
         if(pos != null) {
             PacketRelay.sendToServer(PacketHandler.INSTANCE, new NpcBlockPlayerInteractPacket(pos, interactionID));
         }
@@ -201,8 +196,8 @@ public class DialogueScreen extends Screen {
 
     /**
      * 发包但不关闭窗口
-     * */
-    protected void execute(byte interactionID) {
+     */
+    protected void execute(int interactionID) {
         PacketRelay.sendToServer(PacketHandler.INSTANCE, new NpcPlayerInteractPacket(this.entity == null ? NpcPlayerInteractPacket.NO_ENTITY :this.entity.getId(), interactionID));
     }
 
@@ -257,55 +252,7 @@ public class DialogueScreen extends Screen {
 
     @Override
     public void onClose() {
-        this.finishChat((byte) 0);
-    }
-
-    public static Component screen(String name) {
-        return Component.translatable("screen.smc." + name);
-    }
-
-    public static Component screenAns(String name, int id) {
-        return Component.translatable("screen.smc.ans." + name + "_" + id);
-    }
-    public static Component screenOpt(String name, int id) {
-        return Component.translatable("screen.smc.opt." + name + "_" + id);
-    }
-
-    public static class ScreenDialogueBuilder{
-        private final String name;
-        private final Set<ChatFormatting> defaultAnsFormats = new HashSet<>();
-        private final Set<ChatFormatting> defaultOptFormats = new HashSet<>();
-        public ScreenDialogueBuilder(String name){
-            this.name = name;
-        }
-
-        public void setDefaultAnsFormat(ChatFormatting... formatting) {
-            defaultAnsFormats.addAll(List.of(formatting));
-        }
-        public void setDefaultOptFormat(ChatFormatting... formatting) {
-            defaultOptFormats.addAll(List.of(formatting));
-        }
-
-        public Component ans(int id) {
-            Component ans = DialogueScreen.screenAns(name, id);
-            if(!defaultAnsFormats.isEmpty()) {
-                return ans.copy().withStyle(defaultAnsFormats.toArray(new ChatFormatting[]{}));
-            }
-            return ans;
-        }
-
-        public Component opt(int id) {
-            Component opt = DialogueScreen.screenOpt(name, id);
-            if(!defaultOptFormats.isEmpty()){
-                return opt.copy().withStyle(defaultOptFormats.toArray(new ChatFormatting[]{}));
-            }
-            return opt;
-        }
-
-        public Component name(){
-            return DialogueScreen.screen(name);
-        }
-
+        this.finishChat(0);
     }
 
 }

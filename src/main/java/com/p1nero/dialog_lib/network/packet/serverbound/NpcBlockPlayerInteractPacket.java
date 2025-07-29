@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 /**
  * This packet is sent to the server whenever the player chooses an important action in the NPC dialogue.
  */
-public record NpcBlockPlayerInteractPacket(BlockPos pos, byte interactionID) implements BasePacket {
+public record NpcBlockPlayerInteractPacket(BlockPos pos, int interactionID) implements BasePacket {
     @Override
     public void encode(FriendlyByteBuf buf) {
         buf.writeBlockPos(this.pos());
