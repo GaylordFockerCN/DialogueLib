@@ -1,5 +1,5 @@
 package com.p1nero.dialog_lib.network.packet.clientbound;
-import com.p1nero.dialog_lib.api.NpcDialogue;
+import com.p1nero.dialog_lib.api.NpcDialogueEntity;
 import com.p1nero.dialog_lib.network.packet.BasePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
@@ -22,7 +22,7 @@ public record NPCDialoguePacket(int id, CompoundTag tag) implements BasePacket {
     @Override
     public void execute(Player playerEntity) {
         if (Minecraft.getInstance().player != null && Minecraft.getInstance().level != null) {
-            if (Minecraft.getInstance().level.getEntity(this.id()) instanceof NpcDialogue npc) {
+            if (Minecraft.getInstance().level.getEntity(this.id()) instanceof NpcDialogueEntity npc) {
                 npc.setConversingPlayer(playerEntity);
                 npc.openDialogueScreen(this.tag());
             }

@@ -1,6 +1,6 @@
 package com.p1nero.dialog_lib.network.packet.serverbound;
 
-import com.p1nero.dialog_lib.api.NpcDialogue;
+import com.p1nero.dialog_lib.api.NpcDialogueEntity;
 import com.p1nero.dialog_lib.network.packet.BasePacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,7 +26,7 @@ public record NpcPlayerInteractPacket(int entityID, int interactionID) implement
     public void execute(@Nullable Player player) {
         if (player instanceof ServerPlayer serverPlayer) {
             Entity entity = player.level().getEntity(this.entityID());
-            if (entity instanceof NpcDialogue npc){
+            if (entity instanceof NpcDialogueEntity npc){
                 npc.handleNpcInteraction(serverPlayer, this.interactionID());
             }
         }

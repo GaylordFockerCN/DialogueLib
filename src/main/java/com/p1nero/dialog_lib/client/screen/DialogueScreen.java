@@ -1,7 +1,7 @@
 package com.p1nero.dialog_lib.client.screen;
 
-import com.p1nero.dialog_lib.Config;
-import com.p1nero.dialog_lib.api.NpcDialogue;
+import com.p1nero.dialog_lib.DialogLibConfig;
+import com.p1nero.dialog_lib.api.NpcDialogueEntity;
 import com.p1nero.dialog_lib.client.screen.component.DialogueAnswerComponent;
 import com.p1nero.dialog_lib.client.screen.component.DialogueChoiceComponent;
 import com.p1nero.dialog_lib.network.PacketHandler;
@@ -27,10 +27,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 /**
  * 改编自theAether 的 ValkyrieQueenDialogueScreen
@@ -55,7 +53,7 @@ public class DialogueScreen extends Screen {
 
     public DialogueScreen(@NotNull Entity entity) {
         super(entity.getDisplayName());
-        typewriterInterval = Config.TYPEWRITER_EFFECT_INTERVAL.get();
+        typewriterInterval = DialogLibConfig.TYPEWRITER_EFFECT_INTERVAL.get();
         this.dialogueAnswer = new DialogueAnswerComponent(this.buildDialogueAnswerName(entity.getDisplayName().copy().withStyle(ChatFormatting.YELLOW)).append(": "));
         this.entity = entity;
         this.entityType = entity.getType();
@@ -63,7 +61,7 @@ public class DialogueScreen extends Screen {
 
     public DialogueScreen(Component name, @Nullable Entity entity) {
         super(name);
-        typewriterInterval = Config.TYPEWRITER_EFFECT_INTERVAL.get();
+        typewriterInterval = DialogLibConfig.TYPEWRITER_EFFECT_INTERVAL.get();
         this.dialogueAnswer = new DialogueAnswerComponent(name);
         this.entity = entity;
         if(entity != null) {
@@ -73,7 +71,7 @@ public class DialogueScreen extends Screen {
 
     public DialogueScreen(BlockEntity blockEntity) {
         super(blockEntity.getBlockState().getBlock().getName());
-        typewriterInterval = Config.TYPEWRITER_EFFECT_INTERVAL.get();
+        typewriterInterval = DialogLibConfig.TYPEWRITER_EFFECT_INTERVAL.get();
         this.dialogueAnswer = new DialogueAnswerComponent(blockEntity.getBlockState().getBlock().getName());
         this.pos = blockEntity.getBlockPos();
     }
@@ -159,7 +157,7 @@ public class DialogueScreen extends Screen {
      * @param component The message {@link Component}.
      */
     protected void setDialogueAnswer(Component component) {
-        if(Config.ENABLE_TYPEWRITER_EFFECT.get()){
+        if(DialogLibConfig.ENABLE_TYPEWRITER_EFFECT.get()){
             this.dialogueAnswer.updateTypewriterDialogue(component);
         }else {
             this.dialogueAnswer.updateDialogue(component);
@@ -177,7 +175,7 @@ public class DialogueScreen extends Screen {
     }
 
     /**
-     * Sends an NPC interaction to the server, which is sent through a packet to be handled in {@link NpcDialogue#handleNpcInteraction(ServerPlayer, byte)}.
+     * Sends an NPC interaction to the server, which is sent through a packet to be handled in {@link NpcDialogueEntity#handleNpcInteraction(ServerPlayer, byte)}.
      * @see NpcPlayerInteractPacket
      */
     protected void finishChat(int interactionID) {
@@ -205,7 +203,7 @@ public class DialogueScreen extends Screen {
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(guiGraphics);
         this.renderPicture(guiGraphics);
-        if(Config.ENABLE_TYPEWRITER_EFFECT.get() && typewriterTimer < 0) {
+        if(DialogLibConfig.ENABLE_TYPEWRITER_EFFECT.get() && typewriterTimer < 0) {
             this.dialogueAnswer.updateTypewriterDialogue();
             positionDialogue();
             typewriterTimer = typewriterInterval;

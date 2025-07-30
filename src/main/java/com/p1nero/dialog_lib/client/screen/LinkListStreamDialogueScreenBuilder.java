@@ -1,6 +1,6 @@
 package com.p1nero.dialog_lib.client.screen;
 
-import com.p1nero.dialog_lib.api.NpcDialogue;
+import com.p1nero.dialog_lib.api.NpcDialogueEntity;
 import com.p1nero.dialog_lib.api.component.DialogueComponentBuilder;
 import com.p1nero.dialog_lib.api.component.TreeNode;
 import com.p1nero.dialog_lib.client.screen.component.DialogueChoiceComponent;
@@ -90,7 +90,7 @@ public class LinkListStreamDialogueScreenBuilder {
 
     /**
      * @param finalOption 最后显示的话
-     * @param returnValue 选项的返回值，默认返回0。用于处理 {@link NpcDialogue#handleNpcInteraction(ServerPlayer, byte)}
+     * @param returnValue 选项的返回值，默认返回0。用于处理 {@link NpcDialogueEntity#handleNpcInteraction(ServerPlayer, byte)}
      */
     public LinkListStreamDialogueScreenBuilder addFinalChoice(Component finalOption, byte returnValue) {
         if (answerNode == null)
@@ -105,7 +105,7 @@ public class LinkListStreamDialogueScreenBuilder {
 
     /**
      * @param finalOption 最后显示的话
-     * @param returnValue 选项的返回值，默认返回0。用于处理 {@link NpcDialogue#handleNpcInteraction(ServerPlayer, byte)}
+     * @param returnValue 选项的返回值，默认返回0。用于处理 {@link NpcDialogueEntity#handleNpcInteraction(ServerPlayer, byte)}
      */
     public LinkListStreamDialogueScreenBuilder addFinalChoice(int finalOption, byte returnValue) {
         return addFinalChoice(DialogueComponentBuilder.BUILDER.opt(entityType, finalOption), returnValue);

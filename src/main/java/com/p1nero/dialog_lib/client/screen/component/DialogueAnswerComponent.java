@@ -1,6 +1,6 @@
 package com.p1nero.dialog_lib.client.screen.component;
 
-import com.p1nero.dialog_lib.Config;
+import com.p1nero.dialog_lib.DialogLibConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -40,7 +40,7 @@ public class DialogueAnswerComponent {
     }
 
     public boolean shouldRenderOption() {
-        if(!Config.ENABLE_TYPEWRITER_EFFECT.get()){
+        if(!DialogLibConfig.ENABLE_TYPEWRITER_EFFECT.get()){
             return true;
         }
         return shouldRenderOption;
@@ -77,7 +77,7 @@ public class DialogueAnswerComponent {
 //                maxWidth = Minecraft.getInstance().font.width(fullSplitLines.get(1).text) + 2;
 //            }
 
-            if(Config.ENABLE_TYPEWRITER_EFFECT.get() && i != 0){//因为第一个变量是NPC名字，所以要取下标1。
+            if(DialogLibConfig.ENABLE_TYPEWRITER_EFFECT.get() && i != 0){//因为第一个变量是NPC名字，所以要取下标1。
                 dialogue.x = width / 2 - maxWidth / 2;
             } else {
                 dialogue.x = width / 2 - dialogue.width / 2;
@@ -126,7 +126,7 @@ public class DialogueAnswerComponent {
     public void updateTypewriterDialogue() {
         Style style = message.getStyle();
         updateDialogue(Component.literal(message.getString(index)).withStyle(style));
-        index += Config.TYPEWRITER_EFFECT_SPEED.get();
+        index += DialogLibConfig.TYPEWRITER_EFFECT_SPEED.get();
         if(index > max){
             index = max;
             shouldRenderOption = true;

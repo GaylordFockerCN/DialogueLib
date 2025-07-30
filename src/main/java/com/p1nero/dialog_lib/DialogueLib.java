@@ -21,7 +21,7 @@ public class DialogueLib {
 
     public DialogueLib(FMLJavaModLoadingContext context) {
         context.getModEventBus().addListener(this::commonSetup);
-        context.registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
+        context.registerConfig(ModConfig.Type.CLIENT, DialogLibConfig.SPEC);
     }
     private void commonSetup(final FMLCommonSetupEvent event) {
         PacketHandler.register();

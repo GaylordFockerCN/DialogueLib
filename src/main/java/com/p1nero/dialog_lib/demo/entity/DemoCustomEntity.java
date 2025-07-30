@@ -1,6 +1,6 @@
 package com.p1nero.dialog_lib.demo.entity;
 
-import com.p1nero.dialog_lib.api.NpcDialogue;
+import com.p1nero.dialog_lib.api.NpcDialogueEntity;
 import com.p1nero.dialog_lib.api.component.DialogueComponentBuilder;
 import com.p1nero.dialog_lib.api.component.TreeNode;
 import com.p1nero.dialog_lib.client.screen.LinkListStreamDialogueScreenBuilder;
@@ -19,7 +19,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class DemoCustomEntity extends PathfinderMob implements NpcDialogue {
+public class DemoCustomEntity extends PathfinderMob implements NpcDialogueEntity {
 
     @Nullable
     private Player conversingPlayer;
@@ -79,6 +79,7 @@ public class DemoCustomEntity extends PathfinderMob implements NpcDialogue {
         if(interactionID == 1) {
 
         }
+        this.setConversingPlayer(null);//NOTE!
     }
 
     @Override
