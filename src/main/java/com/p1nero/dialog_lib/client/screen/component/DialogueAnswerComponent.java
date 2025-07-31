@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 添加了实现打字机效果
+ * P1nero:添加了实现打字机效果
  * A widget to handle an NPC's key and their response inside the dialogue screen.
  * @author P1nero
  * @author The Aether
@@ -25,10 +25,10 @@ public class DialogueAnswerComponent {
     private final Component name;
     public int height;
     //打字机效果的下标
-    private int index;
+    public int index;
     //打字机效果的最大值
-    private int max;
-    private int maxWidth;
+    public int max;
+    public int maxWidth;
 
     private boolean shouldRenderOption = false;
 
@@ -63,19 +63,9 @@ public class DialogueAnswerComponent {
      */
     public void reposition(int width, int height, int yOffset) {
 
-        //不用Foreach是为了打字机效果能够跳过boss名
-//        int i = 0;
-//        for (NpcDialogueElement dialogue : this.splitLines) {
         for (int i = 0, j = 0 ;i < splitLines.size(); i++) {
             NpcDialogueElement dialogue = splitLines.get(i);
             dialogue.width = Minecraft.getInstance().font.width(dialogue.text) + 2;
-
-//            int maxWidth = dialogue.width
-//
-//            //如果启动打字机效果，则以完整文本的位置来，即字从左到右出现，而不是从中间往两边延展。比较好看
-//            if(TCRConfig.ENABLE_TYPEWRITER_EFFECT.get() && fullSplitLines.size() > 1 && i != 0){//因为第一个变量是NPC名字，所以要取下标1。
-//                maxWidth = Minecraft.getInstance().font.width(fullSplitLines.get(1).text) + 2;
-//            }
 
             if(DialogLibConfig.ENABLE_TYPEWRITER_EFFECT.get() && i != 0){//因为第一个变量是NPC名字，所以要取下标1。
                 dialogue.x = width / 2 - maxWidth / 2;
@@ -113,7 +103,6 @@ public class DialogueAnswerComponent {
         }
 
         shouldRenderOption = false;
-//        index = key.getString().length();//名字就不用打字机了
         index = 0;
         max = message.getString().length();
         updateTypewriterDialogue();
@@ -121,7 +110,6 @@ public class DialogueAnswerComponent {
 
     /**
      * 添加打字机效果，一次更新一个字
-     * 不知道为什么Component提供根据下标截取String的方法，太感人了
      */
     public void updateTypewriterDialogue() {
         Style style = message.getStyle();

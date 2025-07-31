@@ -1,9 +1,9 @@
 package com.p1nero.dialog_lib.client.screen;
 
 import com.p1nero.dialog_lib.DialogLibConfig;
-import com.p1nero.dialog_lib.api.NpcDialogueEntity;
 import com.p1nero.dialog_lib.client.screen.component.DialogueAnswerComponent;
 import com.p1nero.dialog_lib.client.screen.component.DialogueChoiceComponent;
+import com.p1nero.dialog_lib.mixin.MobInvoker;
 import com.p1nero.dialog_lib.network.PacketHandler;
 import com.p1nero.dialog_lib.network.PacketRelay;
 import com.p1nero.dialog_lib.network.packet.serverbound.NpcBlockPlayerInteractPacket;
@@ -18,17 +18,16 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * 改编自theAether 的 ValkyrieQueenDialogueScreen
@@ -64,7 +63,7 @@ public class DialogueScreen extends Screen {
         typewriterInterval = DialogLibConfig.TYPEWRITER_EFFECT_INTERVAL.get();
         this.dialogueAnswer = new DialogueAnswerComponent(name);
         this.entity = entity;
-        if(entity != null) {
+        if (entity != null) {
             this.entityType = entity.getType();
         }
     }
@@ -86,7 +85,7 @@ public class DialogueScreen extends Screen {
 
     public void setPicture(ResourceLocation resourceLocation) {
         this.PICTURE_LOCATION = resourceLocation;
-        if(Minecraft.getInstance().level != null && Minecraft.getInstance().player != null) {
+        if (Minecraft.getInstance().level != null && Minecraft.getInstance().player != null) {
             LocalPlayer player = Minecraft.getInstance().player;
             Minecraft.getInstance().level.playLocalSound(player.getX(), player.getY(), player.getZ(), SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 1.0F, 1.0F, false);
         }
@@ -125,7 +124,6 @@ public class DialogueScreen extends Screen {
     }
 
     /**
-     * 新增自动矫正位置，以及打字机效果
      * Repositions the dialogue answer and the player's dialogue choices based on the amount of choices.
      */
     protected void positionDialogue() {
@@ -152,37 +150,24 @@ public class DialogueScreen extends Screen {
         }
     }
 
-    /**
-     * Sets what message to display for a dialogue answer.
-     * @param component The message {@link Component}.
-     */
     protected void setDialogueAnswer(Component component) {
-        if(DialogLibConfig.ENABLE_TYPEWRITER_EFFECT.get()){
+        if (DialogLibConfig.ENABLE_TYPEWRITER_EFFECT.get()) {
             this.dialogueAnswer.updateTypewriterDialogue(component);
-        }else {
+        } else {
             this.dialogueAnswer.updateDialogue(component);
         }
 
     }
 
-    /**
-     * Sets up the formatting for the Valkyrie Queen's key in the {@link DialogueAnswerComponent} widget.
-     * @param component The key {@link Component}.
-     * @return The formatted {@link MutableComponent}.
-     */
     public MutableComponent buildDialogueAnswerName(Component component) {
         return Component.literal("[").append(component.copy().withStyle(ChatFormatting.YELLOW)).append("]");
     }
 
-    /**
-     * Sends an NPC interaction to the server, which is sent through a packet to be handled in {@link NpcDialogueEntity#handleNpcInteraction(ServerPlayer, byte)}.
-     * @see NpcPlayerInteractPacket
-     */
     protected void finishChat(int interactionID) {
-        if(pos != null) {
+        if (pos != null) {
             PacketRelay.sendToServer(PacketHandler.INSTANCE, new NpcBlockPlayerInteractPacket(pos, interactionID));
         }
-        PacketRelay.sendToServer(PacketHandler.INSTANCE, new NpcPlayerInteractPacket(this.entity == null ? NpcPlayerInteractPacket.NO_ENTITY :this.entity.getId(), interactionID));
+        PacketRelay.sendToServer(PacketHandler.INSTANCE, new NpcPlayerInteractPacket(this.entity == null ? NpcPlayerInteractPacket.NO_ENTITY : this.entity.getId(), interactionID));
         PICTURE_LOCATION = null;
         yOffset = 0;
         picHeight = 144;
@@ -193,17 +178,50 @@ public class DialogueScreen extends Screen {
     }
 
     /**
+     * 默认对话翻页的时候播放声音
+     */
+    public void playSound() {
+        if (this.isSilent || this.entity == null) {
+            return;
+        }
+        if (this.entity instanceof Mob mob && ((MobInvoker) mob).dialog_lib$invokeGetAmbientSound() != null) {
+            mob.level().playLocalSound(mob.getX(), mob.getY(), mob.getZ(), ((MobInvoker) mob).dialog_lib$invokeGetAmbientSound(), mob.getSoundSource(), 1.0F, 1.0F, false);
+        }
+    }
+
+    /**
      * 发包但不关闭窗口
      */
     protected void execute(int interactionID) {
-        PacketRelay.sendToServer(PacketHandler.INSTANCE, new NpcPlayerInteractPacket(this.entity == null ? NpcPlayerInteractPacket.NO_ENTITY :this.entity.getId(), interactionID));
+        PacketRelay.sendToServer(PacketHandler.INSTANCE, new NpcPlayerInteractPacket(this.entity == null ? NpcPlayerInteractPacket.NO_ENTITY : this.entity.getId(), interactionID));
+    }
+
+    /**
+     * 单机后可提前显示
+     */
+    @Override
+    public boolean mouseClicked(double v, double v1, int i) {
+        if (this.dialogueAnswer.index < dialogueAnswer.max - 3) {
+            this.dialogueAnswer.index = dialogueAnswer.max - 3;
+        }
+        return super.mouseClicked(v, v1, i);
+    }
+
+    /**
+     * 回答是否全部可见
+     */
+    public boolean shouldRenderOption(){
+        if(DialogLibConfig.ENABLE_TYPEWRITER_EFFECT.get()) {
+            return this.dialogueAnswer.shouldRenderOption();
+        }
+        return true;
     }
 
     @Override
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(guiGraphics);
         this.renderPicture(guiGraphics);
-        if(DialogLibConfig.ENABLE_TYPEWRITER_EFFECT.get() && typewriterTimer < 0) {
+        if (DialogLibConfig.ENABLE_TYPEWRITER_EFFECT.get() && typewriterTimer < 0) {
             this.dialogueAnswer.updateTypewriterDialogue();
             positionDialogue();
             typewriterTimer = typewriterInterval;
@@ -214,8 +232,8 @@ public class DialogueScreen extends Screen {
         this.dialogueAnswer.render(guiGraphics);
 
         //如果回答还没显示完则不渲染选项
-        for(Renderable renderable : this.renderables) {
-            if(renderable instanceof DialogueChoiceComponent && !dialogueAnswer.shouldRenderOption()){
+        for (Renderable renderable : this.renderables) {
+            if (renderable instanceof DialogueChoiceComponent && !dialogueAnswer.shouldRenderOption()) {
                 continue;
             }
             renderable.render(guiGraphics, mouseX, mouseY, partialTicks);
@@ -223,8 +241,8 @@ public class DialogueScreen extends Screen {
     }
 
     private void renderPicture(GuiGraphics guiGraphics) {
-        if(PICTURE_LOCATION != null){
-            guiGraphics.blit(PICTURE_LOCATION, this.width/2 - picShowWidth/2, (int) (this.height/2 - picShowHeight / 1.3F), picShowWidth, picShowHeight, 0, 0, picWidth, picHeight, picWidth, picHeight);
+        if (PICTURE_LOCATION != null) {
+            guiGraphics.blit(PICTURE_LOCATION, this.width / 2 - picShowWidth / 2, (int) ((float) this.height / 2 - picShowHeight / 1.3F), picShowWidth, picShowHeight, 0, 0, picWidth, picHeight, picWidth, picHeight);
         }
     }
 

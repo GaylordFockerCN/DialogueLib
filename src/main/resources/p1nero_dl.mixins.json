@@ -1,10 +1,11 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.p1nero.mixin",
+  "package": "com.p1nero.dialog_lib.mixin",
   "compatibilityLevel": "JAVA_8",
   "refmap": "p1nero_dl.refmap.json",
   "mixins": [
+    "MobInvoker"
   ],
   "client": [
   ],

@@ -21,7 +21,7 @@ public class DialogueComponentBuilder {
         this.entityType = entityType;
     }
 
-    public DialogueComponentBuilder() {
+    private DialogueComponentBuilder() {
         this.entityType = null;
     }
 
@@ -58,8 +58,40 @@ public class DialogueComponentBuilder {
         return Component.translatable(entityType + ".choice." + key);
     }
 
+    public MutableComponent optWithBrackets(EntityType<?> entityType, String key) {
+        return Component.literal("[").append(opt(entityType, key)).append("]");
+    }
+
     public MutableComponent opt(EntityType<?> entityType, int i) {
         return Component.translatable(entityType + ".choice" + i);
+    }
+
+    public MutableComponent optWithBrackets(EntityType<?> entityType, int i) {
+        return Component.literal("[").append(opt(entityType, i)).append("]");
+    }
+
+    public MutableComponent opt(String key) {
+        return Component.translatable(entityType + ".choice." + key);
+    }
+
+    public MutableComponent opt(String key, Object... params) {
+        return Component.translatable(entityType + ".choice" + key, params);
+    }
+
+    public MutableComponent opt(int i) {
+        return Component.translatable(entityType + ".choice" + i);
+    }
+
+    public MutableComponent optWithBrackets(int i) {
+        return Component.literal("[").append(opt(i)).append("]");
+    }
+
+    public MutableComponent opt(int i, Object... params) {
+        return Component.translatable(entityType + ".choice" + i, params);
+    }
+
+    public MutableComponent optWithBrackets(int i, Object... params) {
+        return Component.literal("[").append(opt(i, params)).append("]");
     }
 
     public MutableComponent ans(EntityType<?> entityType, int i, boolean newLine) {
@@ -81,18 +113,6 @@ public class DialogueComponentBuilder {
     public MutableComponent ans(EntityType<?> entityType, int i, String s) {
         Component component = Component.translatable(entityType + ".dialog" + i, s);
         return Component.literal("\n").append(component);
-    }
-
-    public MutableComponent opt(String key) {
-        return Component.translatable(entityType + ".choice." + key);
-    }
-
-    public MutableComponent opt(int i) {
-        return Component.translatable(entityType + ".choice" + i);
-    }
-
-    public MutableComponent opt(int i, Object... param) {
-        return Component.translatable(entityType + ".choice" + i, param);
     }
 
     public MutableComponent ans(int i, boolean newLine) {

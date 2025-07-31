@@ -200,6 +200,9 @@ public class LinkListStreamDialogueScreenBuilder {
         //如果是终止按钮则实现返回效果
         if (node instanceof TreeNode.FinalNode finalNode) {
             return button -> {
+                if(!screen.shouldRenderOption()) {
+                    return;
+                }
                 screen.finishChat(finalNode.getReturnValue());
                 if (finalNode.canExecute()) {
                     finalNode.execute(screen);
@@ -209,6 +212,9 @@ public class LinkListStreamDialogueScreenBuilder {
 
         //否则继续递归创建按钮
         return button -> {
+            if(!screen.shouldRenderOption()) {
+                return;
+            }
             if (node.canExecute()) {
                 node.execute(screen);
             }
