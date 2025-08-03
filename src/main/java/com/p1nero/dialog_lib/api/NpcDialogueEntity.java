@@ -1,8 +1,8 @@
 package com.p1nero.dialog_lib.api;
 
-import com.p1nero.dialog_lib.network.PacketHandler;
-import com.p1nero.dialog_lib.network.PacketRelay;
-import com.p1nero.dialog_lib.network.packet.clientbound.NPCDialoguePacket;
+import com.p1nero.dialog_lib.network.DialoguePacketHandler;
+import com.p1nero.dialog_lib.network.DialoguePacketRelay;
+import com.p1nero.dialog_lib.network.packet.clientbound.NPCEntityDialoguePacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -29,7 +29,7 @@ public interface NpcDialogueEntity {
      */
     default boolean sendDialogTo(ServerPlayer serverPlayer, CompoundTag data) {
         if(this.getConversingPlayer() == null) {
-            PacketRelay.sendToPlayer(PacketHandler.INSTANCE, new NPCDialoguePacket(((LivingEntity) this).getId(), data), serverPlayer);
+            DialoguePacketRelay.sendToPlayer(DialoguePacketHandler.INSTANCE, new NPCEntityDialoguePacket(((LivingEntity) this).getId(), data), serverPlayer);
             this.setConversingPlayer(serverPlayer);
             return true;
         }
@@ -40,7 +40,7 @@ public interface NpcDialogueEntity {
      * ignore if there is a conserving player
      */
     default void forceSendDialogTo(ServerPlayer serverPlayer, CompoundTag data) {
-        PacketRelay.sendToPlayer(PacketHandler.INSTANCE, new NPCDialoguePacket(((LivingEntity) this).getId(), data), serverPlayer);
+        DialoguePacketRelay.sendToPlayer(DialoguePacketHandler.INSTANCE, new NPCEntityDialoguePacket(((LivingEntity) this).getId(), data), serverPlayer);
         this.setConversingPlayer(serverPlayer);
     }
 

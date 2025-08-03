@@ -1,9 +1,9 @@
 package com.p1nero.dialog_lib;
 
 import com.mojang.logging.LogUtils;
-import com.p1nero.dialog_lib.network.PacketHandler;
-import com.p1nero.dialog_lib.network.PacketRelay;
-import com.p1nero.dialog_lib.network.packet.clientbound.NPCDialoguePacket;
+import com.p1nero.dialog_lib.network.DialoguePacketHandler;
+import com.p1nero.dialog_lib.network.DialoguePacketRelay;
+import com.p1nero.dialog_lib.network.packet.clientbound.NPCEntityDialoguePacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,18 +21,18 @@ public class DialogueLib {
 
     public DialogueLib(FMLJavaModLoadingContext context) {
         context.getModEventBus().addListener(this::commonSetup);
-        context.registerConfig(ModConfig.Type.CLIENT, DialogLibConfig.SPEC);
+        context.registerConfig(ModConfig.Type.CLIENT, DialogueLibConfig.SPEC);
     }
     private void commonSetup(final FMLCommonSetupEvent event) {
-        PacketHandler.register();
+        DialoguePacketHandler.register();
     }
 
     public static void sendDialog(LivingEntity self, CompoundTag data, ServerPlayer player) {
-        PacketRelay.sendToPlayer(PacketHandler.INSTANCE, new NPCDialoguePacket(self.getId(), data), player);
+        DialoguePacketRelay.sendToPlayer(DialoguePacketHandler.INSTANCE, new NPCEntityDialoguePacket(self.getId(), data), player);
     }
 
     public static void sendDialog(LivingEntity self, ServerPlayer player) {
-        PacketRelay.sendToPlayer(PacketHandler.INSTANCE, new NPCDialoguePacket(self.getId(), new CompoundTag()), player);
+        DialoguePacketRelay.sendToPlayer(DialoguePacketHandler.INSTANCE, new NPCEntityDialoguePacket(self.getId(), new CompoundTag()), player);
     }
 
 }

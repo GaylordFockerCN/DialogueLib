@@ -7,8 +7,8 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PacketDistributor.TargetPoint;
 import net.minecraftforge.network.simple.SimpleChannel;
 
-public class PacketRelay {
-    public PacketRelay() {
+public class DialoguePacketRelay {
+    public DialoguePacketRelay() {
     }
 
     public static <MSG> void sendToPlayer(SimpleChannel handler, MSG message, ServerPlayer player) {

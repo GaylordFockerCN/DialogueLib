@@ -1,13 +1,13 @@
 package com.p1nero.dialog_lib.client.screen;
 
-import com.p1nero.dialog_lib.DialogLibConfig;
+import com.p1nero.dialog_lib.DialogueLibConfig;
 import com.p1nero.dialog_lib.client.screen.component.DialogueAnswerComponent;
 import com.p1nero.dialog_lib.client.screen.component.DialogueChoiceComponent;
 import com.p1nero.dialog_lib.mixin.MobInvoker;
-import com.p1nero.dialog_lib.network.PacketHandler;
-import com.p1nero.dialog_lib.network.PacketRelay;
+import com.p1nero.dialog_lib.network.DialoguePacketHandler;
+import com.p1nero.dialog_lib.network.DialoguePacketRelay;
 import com.p1nero.dialog_lib.network.packet.serverbound.NpcBlockPlayerInteractPacket;
-import com.p1nero.dialog_lib.network.packet.serverbound.NpcPlayerInteractPacket;
+import com.p1nero.dialog_lib.network.packet.serverbound.NpcEntityPlayerInteractPacket;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -52,7 +52,7 @@ public class DialogueScreen extends Screen {
 
     public DialogueScreen(@NotNull Entity entity) {
         super(entity.getDisplayName());
-        typewriterInterval = DialogLibConfig.TYPEWRITER_EFFECT_INTERVAL.get();
+        typewriterInterval = DialogueLibConfig.TYPEWRITER_EFFECT_INTERVAL.get();
         this.dialogueAnswer = new DialogueAnswerComponent(this.buildDialogueAnswerName(entity.getDisplayName().copy().withStyle(ChatFormatting.YELLOW)).append(": "));
         this.entity = entity;
         this.entityType = entity.getType();
@@ -60,7 +60,7 @@ public class DialogueScreen extends Screen {
 
     public DialogueScreen(Component name, @Nullable Entity entity) {
         super(name);
-        typewriterInterval = DialogLibConfig.TYPEWRITER_EFFECT_INTERVAL.get();
+        typewriterInterval = DialogueLibConfig.TYPEWRITER_EFFECT_INTERVAL.get();
         this.dialogueAnswer = new DialogueAnswerComponent(name);
         this.entity = entity;
         if (entity != null) {
@@ -70,7 +70,7 @@ public class DialogueScreen extends Screen {
 
     public DialogueScreen(BlockEntity blockEntity) {
         super(blockEntity.getBlockState().getBlock().getName());
-        typewriterInterval = DialogLibConfig.TYPEWRITER_EFFECT_INTERVAL.get();
+        typewriterInterval = DialogueLibConfig.TYPEWRITER_EFFECT_INTERVAL.get();
         this.dialogueAnswer = new DialogueAnswerComponent(blockEntity.getBlockState().getBlock().getName());
         this.pos = blockEntity.getBlockPos();
     }
@@ -151,7 +151,7 @@ public class DialogueScreen extends Screen {
     }
 
     protected void setDialogueAnswer(Component component) {
-        if (DialogLibConfig.ENABLE_TYPEWRITER_EFFECT.get()) {
+        if (DialogueLibConfig.ENABLE_TYPEWRITER_EFFECT.get()) {
             this.dialogueAnswer.updateTypewriterDialogue(component);
         } else {
             this.dialogueAnswer.updateDialogue(component);
@@ -165,9 +165,9 @@ public class DialogueScreen extends Screen {
 
     protected void finishChat(int interactionID) {
         if (pos != null) {
-            PacketRelay.sendToServer(PacketHandler.INSTANCE, new NpcBlockPlayerInteractPacket(pos, interactionID));
+            DialoguePacketRelay.sendToServer(DialoguePacketHandler.INSTANCE, new NpcBlockPlayerInteractPacket(pos, interactionID));
         }
-        PacketRelay.sendToServer(PacketHandler.INSTANCE, new NpcPlayerInteractPacket(this.entity == null ? NpcPlayerInteractPacket.NO_ENTITY : this.entity.getId(), interactionID));
+        DialoguePacketRelay.sendToServer(DialoguePacketHandler.INSTANCE, new NpcEntityPlayerInteractPacket(this.entity == null ? NpcEntityPlayerInteractPacket.NO_ENTITY : this.entity.getId(), interactionID));
         PICTURE_LOCATION = null;
         yOffset = 0;
         picHeight = 144;
@@ -193,7 +193,7 @@ public class DialogueScreen extends Screen {
      * 发包但不关闭窗口
      */
     protected void execute(int interactionID) {
-        PacketRelay.sendToServer(PacketHandler.INSTANCE, new NpcPlayerInteractPacket(this.entity == null ? NpcPlayerInteractPacket.NO_ENTITY : this.entity.getId(), interactionID));
+        DialoguePacketRelay.sendToServer(DialoguePacketHandler.INSTANCE, new NpcEntityPlayerInteractPacket(this.entity == null ? NpcEntityPlayerInteractPacket.NO_ENTITY : this.entity.getId(), interactionID));
     }
 
     /**
@@ -211,7 +211,7 @@ public class DialogueScreen extends Screen {
      * 回答是否全部可见
      */
     public boolean shouldRenderOption(){
-        if(DialogLibConfig.ENABLE_TYPEWRITER_EFFECT.get()) {
+        if(DialogueLibConfig.ENABLE_TYPEWRITER_EFFECT.get()) {
             return this.dialogueAnswer.shouldRenderOption();
         }
         return true;
@@ -221,7 +221,7 @@ public class DialogueScreen extends Screen {
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(guiGraphics);
         this.renderPicture(guiGraphics);
-        if (DialogLibConfig.ENABLE_TYPEWRITER_EFFECT.get() && typewriterTimer < 0) {
+        if (DialogueLibConfig.ENABLE_TYPEWRITER_EFFECT.get() && typewriterTimer < 0) {
             this.dialogueAnswer.updateTypewriterDialogue();
             positionDialogue();
             typewriterTimer = typewriterInterval;

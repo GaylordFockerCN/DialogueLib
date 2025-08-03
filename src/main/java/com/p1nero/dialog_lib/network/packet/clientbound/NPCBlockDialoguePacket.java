@@ -1,17 +1,20 @@
 package com.p1nero.dialog_lib.network.packet.clientbound;
 import com.p1nero.dialog_lib.api.INpcDialogueBlock;
+import com.p1nero.dialog_lib.events.ClientNpcBlockDialogueEvent;
 import com.p1nero.dialog_lib.network.packet.BasePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.common.MinecraftForge;
 
-public record NPCBlockDialoguePacket(BlockPos pos, CompoundTag tag) implements BasePacket {
+public record NPCBlockDialoguePacket(BlockPos pos, CompoundTag data) implements BasePacket {
     @Override
     public void encode(FriendlyByteBuf buf) {
         buf.writeBlockPos(this.pos());
-        buf.writeNbt(this.tag());
+        buf.writeNbt(this.data());
     }
 
     public static NPCBlockDialoguePacket decode(FriendlyByteBuf buf) {
@@ -21,8 +24,16 @@ public record NPCBlockDialoguePacket(BlockPos pos, CompoundTag tag) implements B
     @Override
     public void execute(Player playerEntity) {
         if (Minecraft.getInstance().player != null && Minecraft.getInstance().level != null) {
-            if (Minecraft.getInstance().level.getBlockEntity(pos) instanceof INpcDialogueBlock npc) {
-                npc.openDialogueScreen(this.tag());
+            BlockEntity blockEntity = Minecraft.getInstance().level.getBlockEntity(pos);
+            if(blockEntity == null) {
+                return;
+            }
+            ClientNpcBlockDialogueEvent event = new ClientNpcBlockDialogueEvent(pos, blockEntity, Minecraft.getInstance().player, data);
+            MinecraftForge.EVENT_BUS.post(event);
+            if(!event.isCanceled()) {
+                if (blockEntity instanceof INpcDialogueBlock npc) {
+                    npc.openDialogueScreen(this.data());
+                }
             }
         }
     }

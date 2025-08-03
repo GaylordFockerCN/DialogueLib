@@ -1,11 +1,14 @@
 package com.p1nero.dialog_lib.network.packet.serverbound;
 
 import com.p1nero.dialog_lib.api.INpcDialogueBlock;
+import com.p1nero.dialog_lib.events.ServerNpcBlockInteractEvent;
 import com.p1nero.dialog_lib.network.packet.BasePacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.common.MinecraftForge;
 
 import javax.annotation.Nullable;
 
@@ -25,10 +28,16 @@ public record NpcBlockPlayerInteractPacket(BlockPos pos, int interactionID) impl
 
     @Override
     public void execute(@Nullable Player playerEntity) {
-        if (playerEntity != null && playerEntity.getServer() != null) {
+        if (playerEntity instanceof ServerPlayer serverPlayer) {
             BlockEntity blockEntity = playerEntity.level().getBlockEntity(pos);
-            if(blockEntity instanceof INpcDialogueBlock npcDialogueBlock) {
-                npcDialogueBlock.handleNpcInteraction(playerEntity, interactionID);
+            if(blockEntity != null) {
+                ServerNpcBlockInteractEvent event = new ServerNpcBlockInteractEvent(pos, blockEntity, serverPlayer, interactionID);
+                MinecraftForge.EVENT_BUS.post(event);
+                if(!event.isCanceled()) {
+                    if(blockEntity instanceof INpcDialogueBlock npcDialogueBlock) {
+                        npcDialogueBlock.handleNpcInteraction(playerEntity, interactionID);
+                    }
+                }
             }
         }
     }
