@@ -69,7 +69,7 @@ public class TreeNode {
         return this;
     }
 
-    public TreeNode addExecutable(byte executeValue) {
+    public TreeNode addExecutable(int executeValue) {
         this.executeValue = executeValue;
         return this;
     }

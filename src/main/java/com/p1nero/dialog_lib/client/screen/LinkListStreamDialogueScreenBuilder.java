@@ -92,7 +92,7 @@ public class LinkListStreamDialogueScreenBuilder {
      * @param finalOption 最后显示的话
      * @param returnValue 选项的返回值，默认返回0。用于处理 {@link NpcDialogueEntity#handleNpcInteraction(ServerPlayer, byte)}
      */
-    public LinkListStreamDialogueScreenBuilder addFinalChoice(Component finalOption, byte returnValue) {
+    public LinkListStreamDialogueScreenBuilder addFinalChoice(Component finalOption, int returnValue) {
         if (answerNode == null)
             return null;
         answerNode.addChild(new TreeNode.FinalNode(finalOption, returnValue));
@@ -100,19 +100,19 @@ public class LinkListStreamDialogueScreenBuilder {
     }
 
     public LinkListStreamDialogueScreenBuilder addFinalChoice(Component finalOption) {
-        return addFinalChoice(finalOption, (byte) 0);
+        return addFinalChoice(finalOption, 0);
     }
 
     /**
      * @param finalOption 最后显示的话
      * @param returnValue 选项的返回值，默认返回0。用于处理 {@link NpcDialogueEntity#handleNpcInteraction(ServerPlayer, byte)}
      */
-    public LinkListStreamDialogueScreenBuilder addFinalChoice(int finalOption, byte returnValue) {
+    public LinkListStreamDialogueScreenBuilder addFinalChoice(int finalOption, int returnValue) {
         return addFinalChoice(DialogueComponentBuilder.BUILDER.opt(entityType, finalOption), returnValue);
     }
 
     public LinkListStreamDialogueScreenBuilder addFinalChoice(int finalOption) {
-        return addFinalChoice(finalOption, (byte) 0);
+        return addFinalChoice(finalOption, 0);
     }
 
     /**
