@@ -3,7 +3,7 @@ package com.p1nero.dialog_lib.demo.entity;
 import com.p1nero.dialog_lib.api.NpcDialogueEntity;
 import com.p1nero.dialog_lib.api.component.DialogueComponentBuilder;
 import com.p1nero.dialog_lib.api.component.TreeNode;
-import com.p1nero.dialog_lib.client.screen.LinkListStreamDialogueScreenBuilder;
+import com.p1nero.dialog_lib.client.screen.DialogueScreenBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
@@ -39,13 +39,12 @@ public class DemoCustomEntity extends PathfinderMob implements NpcDialogueEntity
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
-    public void openDialogueScreen(CompoundTag senderData) {
+    public DialogueScreenBuilder getDialogueBuilder(CompoundTag senderData) {
         LocalPlayer localPlayer = Minecraft.getInstance().player;
         if(localPlayer == null) {
-            return;
+            return null;
         }
-        LinkListStreamDialogueScreenBuilder treeBuilder = new LinkListStreamDialogueScreenBuilder(this);
+        DialogueScreenBuilder treeBuilder = new DialogueScreenBuilder(this);
         DialogueComponentBuilder dBuilder = new DialogueComponentBuilder(this);
         TreeNode root = new TreeNode(dBuilder.ans(0), dBuilder.opt(0));//开场白 | 返回
 
@@ -69,9 +68,7 @@ public class DemoCustomEntity extends PathfinderMob implements NpcDialogueEntity
         root.addChild(ans1).addChild(ans2).addChild(ans3);
 
         treeBuilder.setAnswerRoot(root);
-        if (!treeBuilder.isEmpty()) {
-            Minecraft.getInstance().setScreen(treeBuilder.build());
-        }
+        return treeBuilder;
     }
 
     @Override

@@ -108,6 +108,11 @@ public class TreeNode {
             this.returnValue = returnValue;
         }
 
+        public FinalNode(Component finalOption, int returnValue, Consumer<DialogueScreen> consumer) {
+            this(finalOption, returnValue);
+            this.screenConsumer = consumer;
+        }
+
         public int getReturnValue(){
             return returnValue;
         }

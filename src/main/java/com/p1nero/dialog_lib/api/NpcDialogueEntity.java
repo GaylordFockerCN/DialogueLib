@@ -1,8 +1,10 @@
 package com.p1nero.dialog_lib.api;
 
+import com.p1nero.dialog_lib.client.screen.DialogueScreenBuilder;
 import com.p1nero.dialog_lib.network.DialoguePacketHandler;
 import com.p1nero.dialog_lib.network.DialoguePacketRelay;
 import com.p1nero.dialog_lib.network.packet.clientbound.NPCEntityDialoguePacket;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -14,7 +16,15 @@ import javax.annotation.Nullable;
 
 public interface NpcDialogueEntity {
     @OnlyIn(Dist.CLIENT)
-    void openDialogueScreen(CompoundTag senderData);
+    default void openDialogueScreen(CompoundTag senderData){
+        DialogueScreenBuilder dialogueScreenBuilder = getDialogueBuilder(senderData);
+        if(dialogueScreenBuilder != null && !dialogueScreenBuilder.isEmpty()) {
+            Minecraft.getInstance().setScreen(dialogueScreenBuilder.build());
+        }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    DialogueScreenBuilder getDialogueBuilder(CompoundTag senderData);
 
     /**
      * handle the callback. Don't forget to set Conserving player null after talk.

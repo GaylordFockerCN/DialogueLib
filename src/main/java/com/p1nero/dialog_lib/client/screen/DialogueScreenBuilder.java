@@ -22,7 +22,7 @@ import java.util.function.Consumer;
  *
  * @author P1nero
  */
-public class LinkListStreamDialogueScreenBuilder {
+public class DialogueScreenBuilder {
 
     protected DialogueScreen screen;//封装一下防止出现一堆杂七杂八的方法
     private TreeNode answerRoot;
@@ -30,7 +30,7 @@ public class LinkListStreamDialogueScreenBuilder {
     @Nullable
     private EntityType<?> entityType;
 
-    public LinkListStreamDialogueScreenBuilder(@Nullable Entity entity, Component name) {
+    public DialogueScreenBuilder(@Nullable Entity entity, Component name) {
         screen = new DialogueScreen(name, entity);
         if (entity != null) {
             this.entityType = entity.getType();
@@ -38,13 +38,13 @@ public class LinkListStreamDialogueScreenBuilder {
         init();
     }
 
-    public LinkListStreamDialogueScreenBuilder(Entity entity) {
+    public DialogueScreenBuilder(Entity entity) {
         screen = new DialogueScreen(entity);
         this.entityType = entity.getType();
         init();
     }
 
-    public LinkListStreamDialogueScreenBuilder(EntityType<?> entityType) {
+    public DialogueScreenBuilder(EntityType<?> entityType) {
         screen = new DialogueScreen(entityType.getDescription(), null);
         this.entityType = entityType;
         init();
@@ -64,7 +64,7 @@ public class LinkListStreamDialogueScreenBuilder {
     /**
      * 重写这个是为了让你记得这才是Screen真正被调用的初始化的地方。建议在这里作些判断再调用start。
      */
-    public LinkListStreamDialogueScreenBuilder init() {
+    public DialogueScreenBuilder init() {
         return this;
     }
 
@@ -73,7 +73,7 @@ public class LinkListStreamDialogueScreenBuilder {
      *
      * @param greeting 初始时显示的话
      */
-    public LinkListStreamDialogueScreenBuilder start(Component greeting) {
+    public DialogueScreenBuilder start(Component greeting) {
         answerRoot = new TreeNode(greeting);
         answerNode = answerRoot;
         return this;
@@ -84,7 +84,7 @@ public class LinkListStreamDialogueScreenBuilder {
      *
      * @param greeting 初始时显示的话的编号
      */
-    public LinkListStreamDialogueScreenBuilder start(int greeting) {
+    public DialogueScreenBuilder start(int greeting) {
         return start(DialogueComponentBuilder.BUILDER.ans(entityType, greeting));
     }
 
@@ -92,14 +92,30 @@ public class LinkListStreamDialogueScreenBuilder {
      * @param finalOption 最后显示的话
      * @param returnValue 选项的返回值，默认返回0。用于处理 {@link NpcDialogueEntity#handleNpcInteraction(ServerPlayer, byte)}
      */
-    public LinkListStreamDialogueScreenBuilder addFinalChoice(Component finalOption, int returnValue) {
+    public DialogueScreenBuilder addFinalChoice(Component finalOption, int returnValue) {
         if (answerNode == null)
             return null;
         answerNode.addChild(new TreeNode.FinalNode(finalOption, returnValue));
         return this;
     }
 
-    public LinkListStreamDialogueScreenBuilder addFinalChoice(Component finalOption) {
+    public DialogueScreenBuilder addFinalChoice(Component finalOption, int returnValue, Consumer<DialogueScreen> screenConsumer) {
+        if (answerNode == null)
+            return null;
+        answerNode.addChild(new TreeNode.FinalNode(finalOption, returnValue, screenConsumer));
+        return this;
+    }
+
+    public DialogueScreenBuilder addFinalChoice(Component finalOption, Consumer<DialogueScreen> screenConsumer) {
+        if (answerNode == null)
+            return null;
+        TreeNode.FinalNode finalNode = new TreeNode.FinalNode(finalOption, 0);
+        finalNode.addExecutable(screenConsumer);
+        answerNode.addChild(finalNode);
+        return this;
+    }
+
+    public DialogueScreenBuilder addFinalChoice(Component finalOption) {
         return addFinalChoice(finalOption, 0);
     }
 
@@ -107,11 +123,15 @@ public class LinkListStreamDialogueScreenBuilder {
      * @param finalOption 最后显示的话
      * @param returnValue 选项的返回值，默认返回0。用于处理 {@link NpcDialogueEntity#handleNpcInteraction(ServerPlayer, byte)}
      */
-    public LinkListStreamDialogueScreenBuilder addFinalChoice(int finalOption, int returnValue) {
+    public DialogueScreenBuilder addFinalChoice(int finalOption, int returnValue) {
         return addFinalChoice(DialogueComponentBuilder.BUILDER.opt(entityType, finalOption), returnValue);
     }
 
-    public LinkListStreamDialogueScreenBuilder addFinalChoice(int finalOption) {
+    public DialogueScreenBuilder addFinalChoice(int finalOption, Consumer<DialogueScreen> screenConsumer) {
+        return addFinalChoice(DialogueComponentBuilder.BUILDER.opt(entityType, finalOption), screenConsumer);
+    }
+
+    public DialogueScreenBuilder addFinalChoice(int finalOption) {
         return addFinalChoice(finalOption, 0);
     }
 
@@ -121,7 +141,7 @@ public class LinkListStreamDialogueScreenBuilder {
      * @param option 该选项的内容
      * @param answer 选择该选项后的回答内容
      */
-    public LinkListStreamDialogueScreenBuilder addChoice(Component option, Component answer) {
+    public DialogueScreenBuilder addChoice(Component option, Component answer) {
         if (answerNode == null)
             return null;
         answerNode.addChild(answer, option);
@@ -141,7 +161,7 @@ public class LinkListStreamDialogueScreenBuilder {
      * @param option 该选项的内容
      * @param answer 选择该选项后的回答内容
      */
-    public LinkListStreamDialogueScreenBuilder addChoiceAndStayCurrent(Component option, Component answer) {
+    public DialogueScreenBuilder addChoiceAndStayCurrent(Component option, Component answer) {
         if (answerNode == null)
             return null;
         answerNode.addChild(answer, option);
@@ -155,14 +175,14 @@ public class LinkListStreamDialogueScreenBuilder {
      * @param option 该选项的内容编号
      * @param answer 选择该选项后的回答内容编号
      */
-    public LinkListStreamDialogueScreenBuilder addChoice(int option, int answer) {
+    public DialogueScreenBuilder addChoice(int option, int answer) {
         return addChoice(DialogueComponentBuilder.BUILDER.opt(entityType, option), DialogueComponentBuilder.BUILDER.ans(entityType, answer));
     }
 
     /**
      * 按下按钮后执行
      */
-    public LinkListStreamDialogueScreenBuilder thenExecute(Consumer<DialogueScreen> consumer) {
+    public DialogueScreenBuilder thenExecute(Consumer<DialogueScreen> consumer) {
         if (answerNode == null)
             return null;
         answerNode.addExecutable(consumer);
@@ -172,7 +192,7 @@ public class LinkListStreamDialogueScreenBuilder {
     /**
      * 按下按钮后执行。记得在handle的时候不要把玩家设置为null，提前返回，否则可能中断对话！
      */
-    public LinkListStreamDialogueScreenBuilder thenExecute(byte returnValue) {
+    public DialogueScreenBuilder thenExecute(byte returnValue) {
         answerNode.addExecutable(returnValue);
         return this;
     }
@@ -220,7 +240,7 @@ public class LinkListStreamDialogueScreenBuilder {
             }
             if (node.canExecuteCode()) {
                 if (node.getExecuteValue() == 0) {
-                    throw new IllegalArgumentException("The return value '0' is for ESC");
+                    throw new IllegalArgumentException("The return value '0' is used when ESC pressed");
                 }
                 screen.execute(node.getExecuteValue());
             }
