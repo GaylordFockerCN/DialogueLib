@@ -26,7 +26,8 @@ public class TreeNode {
 
     /**
      * 根节点不应该有选项。
-     * */
+     *
+     */
     public TreeNode(Component answer) {
         this.answer = answer;
     }
@@ -75,16 +76,16 @@ public class TreeNode {
     }
 
     public void execute(DialogueScreen screen) {
-        if(screenConsumer != null){
+        if (screenConsumer != null) {
             screenConsumer.accept(screen);
         }
     }
 
-    public boolean canExecute(){
-        return screenConsumer !=null;
+    public boolean canExecute() {
+        return screenConsumer != null;
     }
 
-    public boolean canExecuteCode(){
+    public boolean canExecuteCode() {
         return executeValue != -114514;
     }
 
@@ -96,12 +97,13 @@ public class TreeNode {
         return option;
     }
 
-    public List<TreeNode> getChildren(){
+    public List<TreeNode> getChildren() {
         return options;
     }
 
-    public static class FinalNode extends TreeNode{
+    public static class FinalNode extends TreeNode {
         private final int returnValue;
+
         public FinalNode(Component finalOption, int returnValue) {
             super(Component.empty());//最终节点不需要回答
             this.option = finalOption;
@@ -113,7 +115,7 @@ public class TreeNode {
             this.screenConsumer = consumer;
         }
 
-        public int getReturnValue(){
+        public int getReturnValue() {
             return returnValue;
         }
 

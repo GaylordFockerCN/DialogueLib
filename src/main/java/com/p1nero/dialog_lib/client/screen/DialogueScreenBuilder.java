@@ -225,10 +225,11 @@ public class DialogueScreenBuilder {
                 if(!screen.shouldRenderOption()) {
                     return;
                 }
+                //先发包后execute，防止有setScreen之类的被顶掉
+                screen.finishChat(finalNode.getReturnValue());
                 if (finalNode.canExecute()) {
                     finalNode.execute(screen);
                 }
-                screen.finishChat(finalNode.getReturnValue());
             };
         }
 
