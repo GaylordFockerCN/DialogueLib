@@ -109,9 +109,7 @@ public class DialogueScreenBuilder {
     public DialogueScreenBuilder addFinalChoice(Component finalOption, Consumer<DialogueScreen> screenConsumer) {
         if (answerNode == null)
             return null;
-        TreeNode.FinalNode finalNode = new TreeNode.FinalNode(finalOption, 0);
-        finalNode.addExecutable(screenConsumer);
-        answerNode.addChild(finalNode);
+        answerNode.addChild(new TreeNode.FinalNode(finalOption, 0, screenConsumer));
         return this;
     }
 
@@ -125,6 +123,10 @@ public class DialogueScreenBuilder {
      */
     public DialogueScreenBuilder addFinalChoice(int finalOption, int returnValue) {
         return addFinalChoice(DialogueComponentBuilder.BUILDER.opt(entityType, finalOption), returnValue);
+    }
+
+    public DialogueScreenBuilder addFinalChoice(int finalOption, int returnValue, Consumer<DialogueScreen> screenConsumer) {
+        return addFinalChoice(DialogueComponentBuilder.BUILDER.opt(entityType, finalOption), returnValue, screenConsumer);
     }
 
     public DialogueScreenBuilder addFinalChoice(int finalOption, Consumer<DialogueScreen> screenConsumer) {
