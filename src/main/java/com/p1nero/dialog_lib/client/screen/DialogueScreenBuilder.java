@@ -225,10 +225,10 @@ public class DialogueScreenBuilder {
                 if(!screen.shouldRenderOption()) {
                     return;
                 }
-                screen.finishChat(finalNode.getReturnValue());
                 if (finalNode.canExecute()) {
                     finalNode.execute(screen);
                 }
+                screen.finishChat(finalNode.getReturnValue());
             };
         }
 
