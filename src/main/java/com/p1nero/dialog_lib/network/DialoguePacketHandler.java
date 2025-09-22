@@ -4,8 +4,8 @@ import com.p1nero.dialog_lib.DialogueLib;
 import com.p1nero.dialog_lib.network.packet.BasePacket;
 import com.p1nero.dialog_lib.network.packet.clientbound.NPCBlockDialoguePacket;
 import com.p1nero.dialog_lib.network.packet.clientbound.NPCEntityDialoguePacket;
-import com.p1nero.dialog_lib.network.packet.serverbound.NpcBlockPlayerInteractPacket;
-import com.p1nero.dialog_lib.network.packet.serverbound.NpcEntityPlayerInteractPacket;
+import com.p1nero.dialog_lib.network.packet.serverbound.HandleNpcBlockPlayerInteractPacket;
+import com.p1nero.dialog_lib.network.packet.serverbound.HandleNpcEntityPlayerInteractPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkRegistry;
@@ -25,8 +25,8 @@ public class DialoguePacketHandler {
     public static synchronized void register() {
         register(NPCEntityDialoguePacket.class, NPCEntityDialoguePacket::decode);
         register(NPCBlockDialoguePacket.class, NPCBlockDialoguePacket::decode);
-        register(NpcEntityPlayerInteractPacket.class, NpcEntityPlayerInteractPacket::decode);
-        register(NpcBlockPlayerInteractPacket.class, NpcBlockPlayerInteractPacket::decode);
+        register(HandleNpcEntityPlayerInteractPacket.class, HandleNpcEntityPlayerInteractPacket::decode);
+        register(HandleNpcBlockPlayerInteractPacket.class, HandleNpcBlockPlayerInteractPacket::decode);
     }
 
     private static <MSG extends BasePacket> void register(final Class<MSG> packet, Function<FriendlyByteBuf, MSG> decoder) {

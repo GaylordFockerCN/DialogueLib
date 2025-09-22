@@ -1,6 +1,6 @@
 package com.p1nero.dialog_lib.client.screen;
 
-import com.p1nero.dialog_lib.api.NpcDialogueEntity;
+import com.p1nero.dialog_lib.api.IEntityNpc;
 import com.p1nero.dialog_lib.api.component.DialogueComponentBuilder;
 import com.p1nero.dialog_lib.api.component.TreeNode;
 import com.p1nero.dialog_lib.client.screen.component.DialogueChoiceComponent;
@@ -16,49 +16,47 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * 用多叉树来优化流式对话框（我自己起的名词，就是没有多个分支几乎都是一条直线的对话，不过好像带有分支的也可以用？
- * 如果要构建树状对话就手动设置answerRoot即可
- * 从Command中得到启发{@link net.minecraft.commands.Commands}
- *
- * @author P1nero
+ * 如果要链式对话就用start和addChoice
+ * 如果要构建复杂对话就手动设置root
  */
 public class DialogueScreenBuilder {
 
     protected DialogueScreen screen;//封装一下防止出现一堆杂七杂八的方法
-    private TreeNode answerRoot;
-    private TreeNode answerNode;
+    protected DialogueComponentBuilder builder;
+    protected TreeNode root;
+    protected TreeNode tempNode;
     @Nullable
-    private EntityType<?> entityType;
+    protected EntityType<?> entityType;
 
-    public DialogueScreenBuilder(@Nullable Entity entity, Component name) {
-        screen = new DialogueScreen(name, entity);
-        if (entity != null) {
-            this.entityType = entity.getType();
-        }
-        init();
+    public DialogueScreenBuilder(Component name) {
+        this.screen = new DialogueScreen(name);
     }
 
     public DialogueScreenBuilder(Entity entity) {
-        screen = new DialogueScreen(entity);
+        this.screen = new DialogueScreen(entity);
         this.entityType = entity.getType();
+        this.builder = new DialogueComponentBuilder(entity);
         init();
     }
 
-    public DialogueScreenBuilder(EntityType<?> entityType) {
-        screen = new DialogueScreen(entityType.getDescription(), null);
-        this.entityType = entityType;
+    public DialogueScreenBuilder(Entity entity, Component name) {
+        this.screen = new DialogueScreen(name, entity);
+        this.entityType = entity.getType();
+        this.builder = new DialogueComponentBuilder(entity);
         init();
+    }
+
+    public void setEntityType(EntityType<?> entityType) {
+        this.entityType = entityType;
+        builder = new DialogueComponentBuilder(entityType);
     }
 
     public boolean isEmpty() {
-        return answerRoot == null;
+        return root == null;
     }
 
-    /**
-     * 用于构建树状对话
-     */
-    public void setAnswerRoot(TreeNode root) {
-        this.answerRoot = root;
+    public void setRoot(TreeNode root) {
+        this.root = root;
     }
 
     /**
@@ -74,8 +72,8 @@ public class DialogueScreenBuilder {
      * @param greeting 初始时显示的话
      */
     public DialogueScreenBuilder start(Component greeting) {
-        answerRoot = new TreeNode(greeting);
-        answerNode = answerRoot;
+        root = new TreeNode(greeting);
+        tempNode = root;
         return this;
     }
 
@@ -85,31 +83,28 @@ public class DialogueScreenBuilder {
      * @param greeting 初始时显示的话的编号
      */
     public DialogueScreenBuilder start(int greeting) {
-        return start(DialogueComponentBuilder.BUILDER.ans(entityType, greeting));
+        return start(builder.ans(greeting));
     }
 
     /**
      * @param finalOption 最后显示的话
-     * @param returnValue 选项的返回值，默认返回0。用于处理 {@link NpcDialogueEntity#handleNpcInteraction(ServerPlayer, byte)}
+     * @param returnValue 选项的返回值，默认返回0。用于处理 {@link IEntityNpc#handleNpcInteraction(ServerPlayer, int)}
      */
     public DialogueScreenBuilder addFinalChoice(Component finalOption, int returnValue) {
-        if (answerNode == null)
-            return null;
-        answerNode.addChild(new TreeNode.FinalNode(finalOption, returnValue));
-        return this;
+        return addFinalChoice(finalOption, returnValue, null);
     }
 
     public DialogueScreenBuilder addFinalChoice(Component finalOption, int returnValue, Consumer<DialogueScreen> screenConsumer) {
-        if (answerNode == null)
+        if (tempNode == null)
             return null;
-        answerNode.addChild(new TreeNode.FinalNode(finalOption, returnValue, screenConsumer));
+        tempNode.addChild(new TreeNode.FinalNode(finalOption, returnValue, screenConsumer));
         return this;
     }
 
     public DialogueScreenBuilder addFinalChoice(Component finalOption, Consumer<DialogueScreen> screenConsumer) {
-        if (answerNode == null)
+        if (tempNode == null)
             return null;
-        answerNode.addChild(new TreeNode.FinalNode(finalOption, 0, screenConsumer));
+        tempNode.addChild(new TreeNode.FinalNode(finalOption, 0, screenConsumer));
         return this;
     }
 
@@ -119,18 +114,18 @@ public class DialogueScreenBuilder {
 
     /**
      * @param finalOption 最后显示的话
-     * @param returnValue 选项的返回值，默认返回0。用于处理 {@link NpcDialogueEntity#handleNpcInteraction(ServerPlayer, byte)}
+     * @param returnValue 选项的返回值，默认返回0。用于处理 {@link IEntityNpc#handleNpcInteraction(ServerPlayer, int)}
      */
     public DialogueScreenBuilder addFinalChoice(int finalOption, int returnValue) {
-        return addFinalChoice(DialogueComponentBuilder.BUILDER.opt(entityType, finalOption), returnValue);
+        return addFinalChoice(builder.opt(finalOption), returnValue);
     }
 
     public DialogueScreenBuilder addFinalChoice(int finalOption, int returnValue, Consumer<DialogueScreen> screenConsumer) {
-        return addFinalChoice(DialogueComponentBuilder.BUILDER.opt(entityType, finalOption), returnValue, screenConsumer);
+        return addFinalChoice(builder.opt(finalOption), returnValue, screenConsumer);
     }
 
     public DialogueScreenBuilder addFinalChoice(int finalOption, Consumer<DialogueScreen> screenConsumer) {
-        return addFinalChoice(DialogueComponentBuilder.BUILDER.opt(entityType, finalOption), screenConsumer);
+        return addFinalChoice(builder.opt(finalOption), screenConsumer);
     }
 
     public DialogueScreenBuilder addFinalChoice(int finalOption) {
@@ -143,30 +138,42 @@ public class DialogueScreenBuilder {
      * @param option 该选项的内容
      * @param answer 选择该选项后的回答内容
      */
-    public DialogueScreenBuilder addChoice(Component option, Component answer) {
-        if (answerNode == null)
+    public DialogueScreenBuilder addChoice(Component option, Component answer, int executeValue, Consumer<DialogueScreen> screenConsumer) {
+        if (tempNode == null)
             return null;
-        answerNode.addChild(answer, option);
+        tempNode.addChild(answer, option, executeValue, screenConsumer);
 
         //直接下一个
-        List<TreeNode> list = answerNode.getChildren();
+        List<TreeNode> list = tempNode.getChildren();
         if (!(list.size() == 1 && list.get(0) instanceof TreeNode.FinalNode)) {
-            answerNode = list.get(0);
+            tempNode = list.get(0);
         }
 
         return this;
     }
 
-    /**
-     * 添加选项进树并返回当前节点
-     *
-     * @param option 该选项的内容
-     * @param answer 选择该选项后的回答内容
-     */
+    public DialogueScreenBuilder addChoice(Component option, Component answer) {
+        return addChoice(option, answer, TreeNode.NOT_EXECUTE, null);
+    }
+
+    public DialogueScreenBuilder addChoice(Component option, Component answer, Consumer<DialogueScreen> screenConsumer) {
+        return addChoice(option, answer, TreeNode.NOT_EXECUTE, screenConsumer);
+    }
+
+    public DialogueScreenBuilder addChoice(Component option, Component answer, int executeValue) {
+        return addChoice(option, answer, executeValue, null);
+    }
+
+        /**
+         * 添加选项进树并返回当前节点
+         *
+         * @param option 该选项的内容
+         * @param answer 选择该选项后的回答内容
+         */
     public DialogueScreenBuilder addChoiceAndStayCurrent(Component option, Component answer) {
-        if (answerNode == null)
+        if (tempNode == null)
             return null;
-        answerNode.addChild(answer, option);
+        tempNode.addChild(answer, option);
         return this;
     }
 
@@ -177,37 +184,89 @@ public class DialogueScreenBuilder {
      * @param option 该选项的内容编号
      * @param answer 选择该选项后的回答内容编号
      */
+    public DialogueScreenBuilder addChoice(int option, int answer, int executeValue, Consumer<DialogueScreen> screenConsumer) {
+        return addChoice(DialogueComponentBuilder.BUILDER.opt(entityType, option), DialogueComponentBuilder.BUILDER.ans(entityType, answer), executeValue, screenConsumer);
+    }
+
+    public DialogueScreenBuilder addChoice(int option, int answer, Consumer<DialogueScreen> screenConsumer) {
+        return addChoice(option, answer, TreeNode.NOT_EXECUTE, screenConsumer);
+    }
+
+    public DialogueScreenBuilder addChoice(int option, int answer, int executeValue) {
+        return addChoice(option, answer, executeValue, null);
+    }
+
     public DialogueScreenBuilder addChoice(int option, int answer) {
-        return addChoice(DialogueComponentBuilder.BUILDER.opt(entityType, option), DialogueComponentBuilder.BUILDER.ans(entityType, answer));
+        return addChoice(option, answer, TreeNode.NOT_EXECUTE, null);
     }
 
     /**
      * 按下按钮后执行
      */
     public DialogueScreenBuilder thenExecute(Consumer<DialogueScreen> consumer) {
-        if (answerNode == null)
+        if (tempNode == null)
             return null;
-        answerNode.addExecutable(consumer);
+        tempNode.addExecutable(consumer);
         return this;
     }
 
     /**
      * 按下按钮后执行。记得在handle的时候不要把玩家设置为null，提前返回，否则可能中断对话！
      */
-    public DialogueScreenBuilder thenExecute(byte returnValue) {
-        answerNode.addExecutable(returnValue);
+    public DialogueScreenBuilder thenExecute(int returnValue) {
+        tempNode.addExecutable(returnValue);
         return this;
+    }
+
+    public TreeNode newNode(int ans, int opt) {
+        return new TreeNode(builder.ans(ans), builder.opt(opt), TreeNode.NOT_EXECUTE, null);
+    }
+
+    public TreeNode newNode(int ans, int opt, Consumer<DialogueScreen> consumer) {
+        return new TreeNode(builder.ans(ans), builder.opt(opt), TreeNode.NOT_EXECUTE, consumer);
+    }
+
+    public TreeNode newNode(int ans, int opt, int execute) {
+        return new TreeNode(builder.ans(ans), builder.opt(opt), execute, null);
+    }
+
+    public TreeNode newNode(int ans, int opt, int execute, Consumer<DialogueScreen> consumer) {
+        return new TreeNode(builder.ans(ans), builder.opt(opt), execute, consumer);
+    }
+
+    public TreeNode newFinalNode(int opt) {
+        return newFinalNode(opt, 0, null);
+    }
+
+    public TreeNode newFinalNode(int opt, int returnValue) {
+        return newFinalNode(opt, returnValue, null);
+    }
+
+    public TreeNode newFinalNode(int opt, int returnValue, Consumer<DialogueScreen> consumer) {
+        return new TreeNode.FinalNode(builder.opt(opt), returnValue, consumer);
+    }
+
+    public DialogueComponentBuilder getComponentBuildr() {
+        return builder;
+    }
+
+    /**
+     * 用于构建复杂的对话
+     */
+    public DialogueScreen buildWith(TreeNode customRoot) {
+        this.setRoot(customRoot);
+        return build();
     }
 
     /**
      * 根据树来建立套娃按钮
      */
     public DialogueScreen build() {
-        if (answerRoot == null)
+        if (root == null)
             return screen;
-        screen.setDialogueAnswer(answerRoot.getAnswer());
+        screen.setDialogueAnswer(root.getAnswer());
         List<DialogueChoiceComponent> choiceList = new ArrayList<>();
-        for (TreeNode child : answerRoot.getChildren()) {
+        for (TreeNode child : root.getChildren()) {
             choiceList.add(new DialogueChoiceComponent(child.getOption().copy(), createChoiceButton(child)));
         }
         screen.setupDialogueChoices(choiceList);
@@ -243,7 +302,7 @@ public class DialogueScreenBuilder {
             }
             if (node.canExecuteCode()) {
                 if (node.getExecuteValue() == 0) {
-                    throw new IllegalArgumentException("The return value '0' is used when ESC pressed");
+                    throw new IllegalArgumentException("The return value '0' is used by default. and this will cause conservation stop!");
                 }
                 screen.execute(node.getExecuteValue());
             }
@@ -252,7 +311,7 @@ public class DialogueScreenBuilder {
             List<TreeNode> options = node.getChildren();
             if (options == null) {
                 options = new ArrayList<>();
-                options.add(new TreeNode.FinalNode(Component.empty(), (byte) 0));
+                options.add(new TreeNode.FinalNode(Component.empty(), 0));
             }
             for (TreeNode child : options) {
                 choiceList.add(new DialogueChoiceComponent(child.getOption().copy(), createChoiceButton(child)));

@@ -13,7 +13,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 /**
  * 可对话的方块
  */
-public interface INpcDialogueBlock {
+public interface IBlockNpc {
     @OnlyIn(Dist.CLIENT)
     void openDialogueScreen(CompoundTag senderData);
     void handleNpcInteraction(Player player, int interactionID);

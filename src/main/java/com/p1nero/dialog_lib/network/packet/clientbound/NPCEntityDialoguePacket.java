@@ -1,5 +1,5 @@
 package com.p1nero.dialog_lib.network.packet.clientbound;
-import com.p1nero.dialog_lib.api.NpcDialogueEntity;
+import com.p1nero.dialog_lib.api.IEntityNpc;
 import com.p1nero.dialog_lib.events.ClientNpcEntityDialogueEvent;
 import com.p1nero.dialog_lib.network.packet.BasePacket;
 import net.minecraft.client.Minecraft;
@@ -32,7 +32,7 @@ public record NPCEntityDialoguePacket(int id, CompoundTag data) implements BaseP
             ClientNpcEntityDialogueEvent event = new ClientNpcEntityDialogueEvent(entity, Minecraft.getInstance().player, data);
             MinecraftForge.EVENT_BUS.post(event);
             if(!event.isCanceled()) {
-                if (entity instanceof NpcDialogueEntity npc) {
+                if (entity instanceof IEntityNpc npc) {
                     npc.setConversingPlayer(playerEntity);
                     npc.openDialogueScreen(this.data());
                 }

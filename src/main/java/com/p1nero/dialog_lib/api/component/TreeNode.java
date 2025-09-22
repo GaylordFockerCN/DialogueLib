@@ -10,6 +10,8 @@ import java.util.function.Consumer;
 
 public class TreeNode {
 
+    public static final int NOT_EXECUTE = -114514;
+
     protected Component answer;
     protected Component option = Component.empty();
 
@@ -20,7 +22,7 @@ public class TreeNode {
         return executeValue;
     }
 
-    protected int executeValue = -114514;//要执行的操作代码 ，114514 代表无操作
+    protected int executeValue = NOT_EXECUTE;//要执行的操作代码 ，114514 代表无操作
 
     protected List<TreeNode> options = new ArrayList<>();
 
@@ -37,6 +39,21 @@ public class TreeNode {
         this.option = option;
     }
 
+    public TreeNode(Component answer, Component option, Consumer<DialogueScreen> screenConsumer) {
+        this(answer, option, NOT_EXECUTE, screenConsumer);
+    }
+
+    public TreeNode(Component answer, Component option, int executeValue) {
+        this(answer, option, executeValue, null);
+    }
+
+    public TreeNode(Component answer, Component option, int executeValue, Consumer<DialogueScreen> screenConsumer) {
+        this.answer = answer;
+        this.option = option;
+        this.executeValue = executeValue;
+        this.screenConsumer = screenConsumer;
+    }
+
     public TreeNode addLeaf(Component option, int returnValue) {
         options.add(new FinalNode(option, returnValue));
         return this;
@@ -47,6 +64,28 @@ public class TreeNode {
      */
     public TreeNode addLeaf(Component option) {
         options.add(new FinalNode(option, -1));
+        return this;
+    }
+
+    public TreeNode addChild(Component answer, Component option, int executeValue, Consumer<DialogueScreen> execute) {
+        TreeNode node = new TreeNode(answer, option);
+        node.addExecutable(execute);
+        node.addExecutable(executeValue);
+        options.add(node);
+        return this;
+    }
+
+    public TreeNode addChild(Component answer, Component option, Consumer<DialogueScreen> execute) {
+        TreeNode node = new TreeNode(answer, option);
+        node.addExecutable(execute);
+        options.add(node);
+        return this;
+    }
+
+    public TreeNode addChild(Component answer, Component option, int executeValue) {
+        TreeNode node = new TreeNode(answer, option);
+        node.addExecutable(executeValue);
+        options.add(node);
         return this;
     }
 

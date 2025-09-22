@@ -1,5 +1,5 @@
 package com.p1nero.dialog_lib.network.packet.clientbound;
-import com.p1nero.dialog_lib.api.INpcDialogueBlock;
+import com.p1nero.dialog_lib.api.IBlockNpc;
 import com.p1nero.dialog_lib.events.ClientNpcBlockDialogueEvent;
 import com.p1nero.dialog_lib.network.packet.BasePacket;
 import net.minecraft.client.Minecraft;
@@ -31,7 +31,7 @@ public record NPCBlockDialoguePacket(BlockPos pos, CompoundTag data) implements 
             ClientNpcBlockDialogueEvent event = new ClientNpcBlockDialogueEvent(pos, blockEntity, Minecraft.getInstance().player, data);
             MinecraftForge.EVENT_BUS.post(event);
             if(!event.isCanceled()) {
-                if (blockEntity instanceof INpcDialogueBlock npc) {
+                if (blockEntity instanceof IBlockNpc npc) {
                     npc.openDialogueScreen(this.data());
                 }
             }

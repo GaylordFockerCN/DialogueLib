@@ -1,6 +1,6 @@
 package com.p1nero.dialog_lib.network.packet.serverbound;
 
-import com.p1nero.dialog_lib.api.NpcDialogueEntity;
+import com.p1nero.dialog_lib.api.IEntityNpc;
 import com.p1nero.dialog_lib.events.ServerNpcEntityInteractEvent;
 import com.p1nero.dialog_lib.network.packet.BasePacket;
 import net.minecraft.network.FriendlyByteBuf;
@@ -11,7 +11,7 @@ import net.minecraftforge.common.MinecraftForge;
 
 import javax.annotation.Nullable;
 
-public record NpcEntityPlayerInteractPacket(int entityID, int interactionID) implements BasePacket {
+public record HandleNpcEntityPlayerInteractPacket(int entityID, int interactionID) implements BasePacket {
     public static final int NO_ENTITY = -1;
 
     @Override
@@ -20,8 +20,8 @@ public record NpcEntityPlayerInteractPacket(int entityID, int interactionID) imp
         buf.writeInt(this.interactionID());
     }
 
-    public static NpcEntityPlayerInteractPacket decode(FriendlyByteBuf buf) {
-        return new NpcEntityPlayerInteractPacket(buf.readInt(), buf.readInt());
+    public static HandleNpcEntityPlayerInteractPacket decode(FriendlyByteBuf buf) {
+        return new HandleNpcEntityPlayerInteractPacket(buf.readInt(), buf.readInt());
     }
 
     @Override
@@ -32,8 +32,11 @@ public record NpcEntityPlayerInteractPacket(int entityID, int interactionID) imp
                 ServerNpcEntityInteractEvent event = new ServerNpcEntityInteractEvent(entity, serverPlayer, interactionID);
                 MinecraftForge.EVENT_BUS.post(event);
                 if(!event.isCanceled()) {
-                    if (entity instanceof NpcDialogueEntity npc){
+                    if (entity instanceof IEntityNpc npc){
                         npc.handleNpcInteraction(serverPlayer, this.interactionID());
+                        if(this.interactionID() == 0) {
+                            npc.setConversingPlayer(null);
+                        }
                     }
                 }
             }

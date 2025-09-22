@@ -6,8 +6,8 @@ import com.p1nero.dialog_lib.client.screen.component.DialogueChoiceComponent;
 import com.p1nero.dialog_lib.mixin.MobInvoker;
 import com.p1nero.dialog_lib.network.DialoguePacketHandler;
 import com.p1nero.dialog_lib.network.DialoguePacketRelay;
-import com.p1nero.dialog_lib.network.packet.serverbound.NpcBlockPlayerInteractPacket;
-import com.p1nero.dialog_lib.network.packet.serverbound.NpcEntityPlayerInteractPacket;
+import com.p1nero.dialog_lib.network.packet.serverbound.HandleNpcBlockPlayerInteractPacket;
+import com.p1nero.dialog_lib.network.packet.serverbound.HandleNpcEntityPlayerInteractPacket;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -29,10 +29,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-/**
- * 改编自theAether 的 ValkyrieQueenDialogueScreen
- * 搬运了相关类
- */
 public class DialogueScreen extends Screen {
     protected ResourceLocation PICTURE_LOCATION = null;
     private int picHeight = 144, picWidth = 256;
@@ -42,7 +38,6 @@ public class DialogueScreen extends Screen {
     protected final DialogueAnswerComponent dialogueAnswer;
     @Nullable
     protected Entity entity;
-
     @Nullable
     protected BlockPos pos;
     public final int typewriterInterval;
@@ -58,18 +53,24 @@ public class DialogueScreen extends Screen {
         this.entityType = entity.getType();
     }
 
-    public DialogueScreen(Component name, @Nullable Entity entity) {
+    public DialogueScreen(Component name) {
         super(name);
         typewriterInterval = DialogueLibConfig.TYPEWRITER_EFFECT_INTERVAL.get();
         this.dialogueAnswer = new DialogueAnswerComponent(name);
+    }
+
+    public DialogueScreen(Component name, @NotNull Entity entity) {
+        this(name);
         this.entity = entity;
-        if (entity != null) {
-            this.entityType = entity.getType();
-        }
+        this.entityType = entity.getType();
     }
 
     public DialogueScreen(BlockEntity blockEntity) {
-        super(blockEntity.getBlockState().getBlock().getName());
+        this(blockEntity.getBlockState().getBlock().getName(), blockEntity);
+    }
+
+    public DialogueScreen(Component name, BlockEntity blockEntity) {
+        super(name);
         typewriterInterval = DialogueLibConfig.TYPEWRITER_EFFECT_INTERVAL.get();
         this.dialogueAnswer = new DialogueAnswerComponent(blockEntity.getBlockState().getBlock().getName());
         this.pos = blockEntity.getBlockPos();
@@ -165,9 +166,9 @@ public class DialogueScreen extends Screen {
 
     protected void finishChat(int interactionID) {
         if (pos != null) {
-            DialoguePacketRelay.sendToServer(DialoguePacketHandler.INSTANCE, new NpcBlockPlayerInteractPacket(pos, interactionID));
+            DialoguePacketRelay.sendToServer(DialoguePacketHandler.INSTANCE, new HandleNpcBlockPlayerInteractPacket(pos, interactionID));
         }
-        DialoguePacketRelay.sendToServer(DialoguePacketHandler.INSTANCE, new NpcEntityPlayerInteractPacket(this.entity == null ? NpcEntityPlayerInteractPacket.NO_ENTITY : this.entity.getId(), interactionID));
+        DialoguePacketRelay.sendToServer(DialoguePacketHandler.INSTANCE, new HandleNpcEntityPlayerInteractPacket(this.entity == null ? HandleNpcEntityPlayerInteractPacket.NO_ENTITY : this.entity.getId(), interactionID));
         PICTURE_LOCATION = null;
         yOffset = 0;
         picHeight = 144;
@@ -193,7 +194,7 @@ public class DialogueScreen extends Screen {
      * 发包但不关闭窗口
      */
     protected void execute(int interactionID) {
-        DialoguePacketRelay.sendToServer(DialoguePacketHandler.INSTANCE, new NpcEntityPlayerInteractPacket(this.entity == null ? NpcEntityPlayerInteractPacket.NO_ENTITY : this.entity.getId(), interactionID));
+        DialoguePacketRelay.sendToServer(DialoguePacketHandler.INSTANCE, new HandleNpcEntityPlayerInteractPacket(this.entity == null ? HandleNpcEntityPlayerInteractPacket.NO_ENTITY : this.entity.getId(), interactionID));
     }
 
     /**
@@ -246,10 +247,6 @@ public class DialogueScreen extends Screen {
         }
     }
 
-    /**
-     * [CODE COPY] - {@link Screen#renderBackground(GuiGraphics)}.<br><br>
-     * Remove code for dark gradient and dirt background.
-     */
     @Override
     public void renderBackground(@NotNull GuiGraphics guiGraphics) {
     }

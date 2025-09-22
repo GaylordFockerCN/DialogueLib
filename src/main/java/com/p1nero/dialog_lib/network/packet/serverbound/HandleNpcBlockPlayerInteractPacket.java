@@ -1,6 +1,6 @@
 package com.p1nero.dialog_lib.network.packet.serverbound;
 
-import com.p1nero.dialog_lib.api.INpcDialogueBlock;
+import com.p1nero.dialog_lib.api.IBlockNpc;
 import com.p1nero.dialog_lib.events.ServerNpcBlockInteractEvent;
 import com.p1nero.dialog_lib.network.packet.BasePacket;
 import net.minecraft.core.BlockPos;
@@ -15,15 +15,15 @@ import javax.annotation.Nullable;
 /**
  * This packet is sent to the server whenever the player chooses an important action in the NPC dialogue.
  */
-public record NpcBlockPlayerInteractPacket(BlockPos pos, int interactionID) implements BasePacket {
+public record HandleNpcBlockPlayerInteractPacket(BlockPos pos, int interactionID) implements BasePacket {
     @Override
     public void encode(FriendlyByteBuf buf) {
         buf.writeBlockPos(this.pos());
         buf.writeByte(this.interactionID());
     }
 
-    public static NpcBlockPlayerInteractPacket decode(FriendlyByteBuf buf) {
-        return new NpcBlockPlayerInteractPacket(buf.readBlockPos(), buf.readByte());
+    public static HandleNpcBlockPlayerInteractPacket decode(FriendlyByteBuf buf) {
+        return new HandleNpcBlockPlayerInteractPacket(buf.readBlockPos(), buf.readByte());
     }
 
     @Override
@@ -34,7 +34,7 @@ public record NpcBlockPlayerInteractPacket(BlockPos pos, int interactionID) impl
                 ServerNpcBlockInteractEvent event = new ServerNpcBlockInteractEvent(pos, blockEntity, serverPlayer, interactionID);
                 MinecraftForge.EVENT_BUS.post(event);
                 if(!event.isCanceled()) {
-                    if(blockEntity instanceof INpcDialogueBlock npcDialogueBlock) {
+                    if(blockEntity instanceof IBlockNpc npcDialogueBlock) {
                         npcDialogueBlock.handleNpcInteraction(playerEntity, interactionID);
                     }
                 }

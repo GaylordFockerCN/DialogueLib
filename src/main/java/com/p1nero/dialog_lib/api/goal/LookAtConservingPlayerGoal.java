@@ -1,6 +1,6 @@
 package com.p1nero.dialog_lib.api.goal;
 
-import com.p1nero.dialog_lib.api.NpcDialogueEntity;
+import com.p1nero.dialog_lib.api.IEntityNpc;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
@@ -10,9 +10,9 @@ import net.minecraft.world.item.trading.Merchant;
 import java.util.EnumSet;
 
 /**
- * This goal makes an NPC stop in place when talking with a player.或交易时
+ * 对话或交易时看着玩家
  */
-public class LookAtConservingPlayerGoal<T extends Mob & NpcDialogueEntity> extends LookAtPlayerGoal {
+public class LookAtConservingPlayerGoal<T extends Mob & IEntityNpc> extends LookAtPlayerGoal {
     private final T npc;
 
     public LookAtConservingPlayerGoal(T npc) {
