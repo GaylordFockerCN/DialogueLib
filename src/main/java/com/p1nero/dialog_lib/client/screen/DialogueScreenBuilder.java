@@ -3,7 +3,7 @@ package com.p1nero.dialog_lib.client.screen;
 import com.p1nero.dialog_lib.api.IEntityNpc;
 import com.p1nero.dialog_lib.api.component.DialogueComponentBuilder;
 import com.p1nero.dialog_lib.api.component.DialogNode;
-import com.p1nero.dialog_lib.client.screen.component.DialogueChoiceComponent;
+import com.p1nero.dialog_lib.client.screen.component.DialogueOptionComponent;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -301,10 +300,10 @@ public class DialogueScreenBuilder {
         if (root == null)
             return screen;
         screen.setDialogueAnswer(root.getAnswer());
-        List<DialogueChoiceComponent> choiceList = new ArrayList<>();
+        List<DialogueOptionComponent> choiceList = new ArrayList<>();
         for (DialogNode child : root.getChildren()) {
             if(child.getOption() != null) {
-                choiceList.add(new DialogueChoiceComponent(child.getOption().copy(), createChoiceButton(child)));
+                choiceList.add(new DialogueOptionComponent(child.getOption().copy(), createChoiceButton(child)));
             }
         }
         screen.setupDialogueChoices(choiceList);
@@ -345,14 +344,14 @@ public class DialogueScreenBuilder {
                 screen.execute(node.getExecuteValue());
             }
             screen.setDialogueAnswer(node.getAnswer());
-            List<DialogueChoiceComponent> choiceList = new ArrayList<>();
+            List<DialogueOptionComponent> choiceList = new ArrayList<>();
             List<DialogNode> options = node.getChildren();
             if (options == null) {
                 options = new ArrayList<>();
                 options.add(new DialogNode.FinalNode(Component.empty(), 0));
             }
             for (DialogNode child : options) {
-                choiceList.add(new DialogueChoiceComponent(child.getOption().copy(), createChoiceButton(child)));
+                choiceList.add(new DialogueOptionComponent(child.getOption().copy(), createChoiceButton(child)));
             }
             screen.setupDialogueChoices(choiceList);
         };

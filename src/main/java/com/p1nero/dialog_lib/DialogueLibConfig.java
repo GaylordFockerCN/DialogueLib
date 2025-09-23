@@ -6,6 +6,11 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = DialogueLib.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class DialogueLibConfig {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+    public static final ForgeConfigSpec.BooleanValue OPTION_IN_CENTER;
+    public static final ForgeConfigSpec.BooleanValue ENABLE_BACKGROUND;
+    public static final ForgeConfigSpec.BooleanValue FADED_BACKGROUND;
+    public static final ForgeConfigSpec.BooleanValue ENABLE_ANS_BACKGROUND;
+    public static final ForgeConfigSpec.BooleanValue ENABLE_OPT_BACKGROUND;
     public static final ForgeConfigSpec.BooleanValue ENABLE_TYPEWRITER_EFFECT;
     public static final ForgeConfigSpec.IntValue TYPEWRITER_EFFECT_SPEED;
     public static final ForgeConfigSpec.IntValue TYPEWRITER_EFFECT_INTERVAL;
@@ -13,9 +18,14 @@ public class DialogueLibConfig {
 
     static{
         ForgeConfigSpec.Builder clientBuilder = new ForgeConfigSpec.Builder();
-        ENABLE_TYPEWRITER_EFFECT = createBool(clientBuilder, "enable_typewriter_effect", true, "剧情对话是否使用打字机效果");
-        TYPEWRITER_EFFECT_SPEED = createInt(clientBuilder, "typewriter_effect_speed", 2, 1, "打字机效果打字速度");
-        TYPEWRITER_EFFECT_INTERVAL = createInt(clientBuilder, "typewriter_effect_interval", 2, 1, "打字机效果打字间隔");
+        OPTION_IN_CENTER = createBool(clientBuilder, "option_in_center", false, "[选项]是否居中");
+        ENABLE_BACKGROUND = createBool(clientBuilder, "enable_background", false, "是否开启[背景框]");
+        FADED_BACKGROUND = createBool(clientBuilder, "faded_background", true, "使用[渐变背景框]或[边框背景框]");
+        ENABLE_ANS_BACKGROUND = createBool(clientBuilder, "enable_ans_background", true, "是否绘制[回答]的背景");
+        ENABLE_OPT_BACKGROUND = createBool(clientBuilder, "enable_opt_background", true, "是否绘制[选项]的背景");
+        ENABLE_TYPEWRITER_EFFECT = createBool(clientBuilder, "enable_typewriter_effect", true, "剧情对话是否使用[打字机效果]");
+        TYPEWRITER_EFFECT_SPEED = createInt(clientBuilder, "typewriter_effect_speed", 2, 1, "[打字机效果]打字速度");
+        TYPEWRITER_EFFECT_INTERVAL = createInt(clientBuilder, "typewriter_effect_interval", 2, 1, "[打字机效果]打字间隔");
         SPEC = clientBuilder.build();
     }
 

@@ -2,7 +2,7 @@ package com.p1nero.dialog_lib.client.screen;
 
 import com.p1nero.dialog_lib.DialogueLibConfig;
 import com.p1nero.dialog_lib.client.screen.component.DialogueAnswerComponent;
-import com.p1nero.dialog_lib.client.screen.component.DialogueChoiceComponent;
+import com.p1nero.dialog_lib.client.screen.component.DialogueOptionComponent;
 import com.p1nero.dialog_lib.mixin.MobInvoker;
 import com.p1nero.dialog_lib.network.DialoguePacketHandler;
 import com.p1nero.dialog_lib.network.DialoguePacketRelay;
@@ -31,10 +31,14 @@ import java.util.*;
 
 public class DialogueScreen extends Screen {
     protected ResourceLocation PICTURE_LOCATION = null;
+    public static final int BACKGROUND_COLOR = 0xCC000000;
+    public static final int BORDER_COLOR = 0xFFFFFFFF;
     private int picHeight = 144, picWidth = 256;
     private int picShowHeight = 144, picShowWidth = 256;
     private int yOffset = 0;
+    private float rate;
     private boolean isSilent;
+    private int currentOptionsCount;
     protected final DialogueAnswerComponent dialogueAnswer;
     @Nullable
     protected Entity entity;
@@ -48,7 +52,7 @@ public class DialogueScreen extends Screen {
     public DialogueScreen(@NotNull Entity entity) {
         super(entity.getDisplayName());
         typewriterInterval = DialogueLibConfig.TYPEWRITER_EFFECT_INTERVAL.get();
-        this.dialogueAnswer = new DialogueAnswerComponent(this.buildDialogueAnswerName(entity.getDisplayName().copy().withStyle(ChatFormatting.YELLOW)).append(": "));
+        this.dialogueAnswer = new DialogueAnswerComponent(this.buildDialogueAnswerName(entity.getDisplayName().copy().withStyle(ChatFormatting.GOLD)).append(": "));
         this.entity = entity;
         this.entityType = entity.getType();
     }
@@ -116,9 +120,10 @@ public class DialogueScreen extends Screen {
         this.picShowWidth = picShowWidth;
     }
 
-    protected void setupDialogueChoices(List<DialogueChoiceComponent> options) {
+    protected void setupDialogueChoices(List<DialogueOptionComponent> options) {
+        currentOptionsCount = options.size();
         this.clearWidgets();
-        for (DialogueChoiceComponent option : options) {
+        for (DialogueOptionComponent option : options) {
             this.addRenderableWidget(option);
         }
         this.positionDialogue();
@@ -128,25 +133,53 @@ public class DialogueScreen extends Screen {
      * Repositions the dialogue answer and the player's dialogue choices based on the amount of choices.
      */
     protected void positionDialogue() {
+        if (DialogueLibConfig.OPTION_IN_CENTER.get()) {
+            positionDialogue1();
+        } else {
+            positionDialogue2();
+        }
+    }
+
+    protected void positionDialogue1() {
+        rate = 5.0F / 4;
         // Dialogue answer.
-        this.dialogueAnswer.reposition(this.width, this.height * 5 / 4, yOffset);//相较于天堂的下移了一点，因为是中文
+        this.dialogueAnswer.reposition(this.width, (int) (this.height * rate), yOffset);//相较于天堂的下移了一点，因为是中文
         // Dialogue choices.
         int lineNumber = this.dialogueAnswer.height / 12 + 1;
         Iterator<Renderable> iterator = this.renderables.iterator();
         while (iterator.hasNext()) {
             Renderable renderable = iterator.next();
-            if (renderable instanceof DialogueChoiceComponent option) {
+            if (renderable instanceof DialogueOptionComponent option) {
                 option.setX(this.width / 2 - option.getWidth() / 2);
-                int y = this.height / 2 * 5 / 4 + 12 * lineNumber + yOffset;
+                int y = (int) (this.height / 2.0 * rate + 12 * lineNumber + yOffset);
                 option.setY(y);
                 lineNumber++;
                 int h = option.getHeight() + 2;
                 if (!iterator.hasNext() && y + h > this.height && typewriterTimer < 0) {
                     yOffset -= h;
-                    this.dialogueAnswer.reposition(this.width, this.height * 5 / 4, yOffset);
-                    y = this.height / 2 * 5 / 4 + 12 * lineNumber + yOffset;
+                    this.dialogueAnswer.reposition(this.width, (int) (this.height * rate), yOffset);
+                    y = (int) (this.height / 2.0 * rate + 12 * lineNumber + yOffset);
                     option.setY(y);//调低一点
                 }
+            }
+        }
+    }
+    protected void positionDialogue2() {
+        // Dialogue answer.
+        rate = 1.4F;
+        this.dialogueAnswer.reposition(this.width, (int) (this.height * rate), yOffset);//相较于天堂的下移了一点，因为是中文
+        int answerBottomY = (int) (this.height / 2.0 * rate + this.dialogueAnswer.height);
+        if(this.height / 2.0 * rate + this.dialogueAnswer.height > this.height && typewriterTimer < 0){
+            yOffset -= (answerBottomY - this.height);
+        }
+        // Dialogue choices.
+        int lineNumber = 0;
+        for (Renderable renderable : this.renderables) {
+            if (renderable instanceof DialogueOptionComponent option) {
+                option.setX(this.width / 2 + this.width / 6);
+                int y = (int) (this.height / 2.0 * rate + 12 * lineNumber + yOffset - currentOptionsCount * 12);
+                option.setY(y);
+                lineNumber++;
             }
         }
     }
@@ -161,7 +194,7 @@ public class DialogueScreen extends Screen {
     }
 
     public MutableComponent buildDialogueAnswerName(Component component) {
-        return Component.literal("[").append(component.copy().withStyle(ChatFormatting.YELLOW)).append("]");
+        return Component.literal("[").append(component.copy().withStyle(ChatFormatting.GOLD)).append("]");
     }
 
     protected void finishChat(int interactionID) {
@@ -234,7 +267,7 @@ public class DialogueScreen extends Screen {
 
         //如果回答还没显示完则不渲染选项
         for (Renderable renderable : this.renderables) {
-            if (renderable instanceof DialogueChoiceComponent && !dialogueAnswer.shouldRenderOption()) {
+            if (renderable instanceof DialogueOptionComponent && !dialogueAnswer.shouldRenderOption()) {
                 continue;
             }
             renderable.render(guiGraphics, mouseX, mouseY, partialTicks);
@@ -249,6 +282,33 @@ public class DialogueScreen extends Screen {
 
     @Override
     public void renderBackground(@NotNull GuiGraphics guiGraphics) {
+        if(DialogueLibConfig.ENABLE_BACKGROUND.get()) {
+            int tooltipHeight = dialogueAnswer.height + 10;
+            if(DialogueLibConfig.OPTION_IN_CENTER.get()) {
+                tooltipHeight += (currentOptionsCount + 1) * 12;
+            }
+            int posY = (int) (this.height / 2.0 * rate + yOffset - 5);
+            int tooltipWidth = 340;
+            int posX = this.width / 2 - tooltipWidth / 2;
+
+            if(DialogueLibConfig.FADED_BACKGROUND.get()) {
+                int gradientHeight = this.height - posY;
+                for (int i = 0; i < gradientHeight; i++) {
+                    float progress = (float) i / gradientHeight;
+                    float curve = progress * progress;
+                    int alpha = (int) (0xA0 * (1 - curve));
+                    int color = (alpha << 24);
+                    if (alpha > 0) {
+                        int currentY = this.height - i;
+                        guiGraphics.fill(0, currentY, this.width, currentY + 1, color);
+                    }
+                }
+
+            } else {
+                guiGraphics.fill(posX, posY, posX + tooltipWidth, posY + tooltipHeight, BACKGROUND_COLOR);
+                guiGraphics.renderOutline(posX, posY, tooltipWidth, tooltipHeight, BORDER_COLOR);
+            }
+        }
     }
 
     @Override

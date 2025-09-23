@@ -13,6 +13,7 @@ import java.util.List;
 /**
  * P1nero:添加了实现打字机效果
  * A widget to handle an NPC's key and their response inside the dialogue screen.
+ *
  * @author P1nero
  * @author The Aether
  */
@@ -40,7 +41,7 @@ public class DialogueAnswerComponent {
     }
 
     public boolean shouldRenderOption() {
-        if(!DialogueLibConfig.ENABLE_TYPEWRITER_EFFECT.get()){
+        if (!DialogueLibConfig.ENABLE_TYPEWRITER_EFFECT.get()) {
             return true;
         }
         return shouldRenderOption;
@@ -58,16 +59,16 @@ public class DialogueAnswerComponent {
      * Repositions the dialogue to the center of the screen.
      * 如果启动打字机效果，则所有文本按完整文本第一行出现的文本的最左侧定位。因为这样阅读比较舒服
      * 先保存一份完整文本，在沿用天堂的计算定位，我真是天才
-     * @param width The {@link Integer} for the parent screen width.
+     *
+     * @param width  The {@link Integer} for the parent screen width.
      * @param height The {@link Integer} for the parent screen height.
      */
     public void reposition(int width, int height, int yOffset) {
-
-        for (int i = 0, j = 0 ;i < splitLines.size(); i++) {
+        for (int i = 0, j = 0; i < splitLines.size(); i++) {
             NpcDialogueElement dialogue = splitLines.get(i);
             dialogue.width = Minecraft.getInstance().font.width(dialogue.text) + 2;
 
-            if(DialogueLibConfig.ENABLE_TYPEWRITER_EFFECT.get() && i != 0){//因为第一个变量是NPC名字，所以要取下标1。
+            if (DialogueLibConfig.ENABLE_TYPEWRITER_EFFECT.get() && i != 0) {//因为第一个变量是NPC名字，所以要取下标1。
                 dialogue.x = width / 2 - maxWidth / 2;
             } else {
                 dialogue.x = width / 2 - dialogue.width / 2;
@@ -82,7 +83,7 @@ public class DialogueAnswerComponent {
         updateSplitLines(splitLines, message);
     }
 
-    private void updateSplitLines(List<NpcDialogueElement> pSplitLine, Component message){
+    private void updateSplitLines(List<NpcDialogueElement> pSplitLine, Component message) {
         pSplitLine.clear();
         List<FormattedCharSequence> list = Minecraft.getInstance().font.split(name.copy().append(message), 300);
         this.height = list.size() * 12;
@@ -94,11 +95,11 @@ public class DialogueAnswerComponent {
      */
     public void updateTypewriterDialogue(Component message) {
         this.message = message;
-        updateSplitLines(fullSplitLines,message);
+        updateSplitLines(fullSplitLines, message);
 
         //以最长那句话的最左边为最左边。
         maxWidth = 0;
-        for(NpcDialogueElement element:fullSplitLines){
+        for (NpcDialogueElement element : fullSplitLines) {
             maxWidth = Math.max(Minecraft.getInstance().font.width(element.text) + 2, maxWidth);
         }
 
@@ -115,7 +116,7 @@ public class DialogueAnswerComponent {
         Style style = message.getStyle();
         updateDialogue(Component.literal(message.getString(index)).withStyle(style));
         index += DialogueLibConfig.TYPEWRITER_EFFECT_SPEED.get();
-        if(index > max){
+        if (index > max) {
             index = max;
             shouldRenderOption = true;
         }
@@ -138,7 +139,9 @@ public class DialogueAnswerComponent {
         }
 
         public void render(GuiGraphics guiGraphics) {
-            guiGraphics.fillGradient(this.x, this.y, this.x + width, this.y + 12, 0x66000000, 0x66000000);
+            if (DialogueLibConfig.ENABLE_ANS_BACKGROUND.get()) {
+                guiGraphics.fillGradient(this.x, this.y, this.x + width, this.y + 12, 0x66000000, 0x66000000);
+            }
             guiGraphics.drawString(Minecraft.getInstance().font, this.text, this.x + 1, this.y + 1, 0xFFFFFF);
         }
     }
