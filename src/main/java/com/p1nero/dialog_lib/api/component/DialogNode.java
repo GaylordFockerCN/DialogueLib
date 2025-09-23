@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class TreeNode {
+public class DialogNode {
 
     public static final int NOT_EXECUTE = -114514;
 
@@ -24,37 +24,37 @@ public class TreeNode {
 
     protected int executeValue = NOT_EXECUTE;//要执行的操作代码 ，114514 代表无操作
 
-    protected List<TreeNode> options = new ArrayList<>();
+    protected List<DialogNode> options = new ArrayList<>();
 
     /**
      * 根节点不应该有选项。
      *
      */
-    public TreeNode(Component answer) {
+    public DialogNode(Component answer) {
         this.answer = answer;
     }
 
-    public TreeNode(Component answer, Component option) {
+    public DialogNode(Component answer, Component option) {
         this.answer = answer;
         this.option = option;
     }
 
-    public TreeNode(Component answer, Component option, Consumer<DialogueScreen> screenConsumer) {
+    public DialogNode(Component answer, Component option, Consumer<DialogueScreen> screenConsumer) {
         this(answer, option, NOT_EXECUTE, screenConsumer);
     }
 
-    public TreeNode(Component answer, Component option, int executeValue) {
+    public DialogNode(Component answer, Component option, int executeValue) {
         this(answer, option, executeValue, null);
     }
 
-    public TreeNode(Component answer, Component option, int executeValue, Consumer<DialogueScreen> screenConsumer) {
+    public DialogNode(Component answer, Component option, int executeValue, Consumer<DialogueScreen> screenConsumer) {
         this.answer = answer;
         this.option = option;
         this.executeValue = executeValue;
         this.screenConsumer = screenConsumer;
     }
 
-    public TreeNode addLeaf(Component option, int returnValue) {
+    public DialogNode addLeaf(Component option, int returnValue) {
         options.add(new FinalNode(option, returnValue));
         return this;
     }
@@ -62,54 +62,54 @@ public class TreeNode {
     /**
      * 默认的情况。负数不会被处理
      */
-    public TreeNode addLeaf(Component option) {
+    public DialogNode addLeaf(Component option) {
         options.add(new FinalNode(option, -1));
         return this;
     }
 
-    public TreeNode addChild(Component answer, Component option, int executeValue, Consumer<DialogueScreen> execute) {
-        TreeNode node = new TreeNode(answer, option);
+    public DialogNode addChild(Component answer, Component option, int executeValue, Consumer<DialogueScreen> execute) {
+        DialogNode node = new DialogNode(answer, option);
         node.addExecutable(execute);
         node.addExecutable(executeValue);
         options.add(node);
         return this;
     }
 
-    public TreeNode addChild(Component answer, Component option, Consumer<DialogueScreen> execute) {
-        TreeNode node = new TreeNode(answer, option);
+    public DialogNode addChild(Component answer, Component option, Consumer<DialogueScreen> execute) {
+        DialogNode node = new DialogNode(answer, option);
         node.addExecutable(execute);
         options.add(node);
         return this;
     }
 
-    public TreeNode addChild(Component answer, Component option, int executeValue) {
-        TreeNode node = new TreeNode(answer, option);
+    public DialogNode addChild(Component answer, Component option, int executeValue) {
+        DialogNode node = new DialogNode(answer, option);
         node.addExecutable(executeValue);
         options.add(node);
         return this;
     }
 
-    public TreeNode addChild(Component answer, Component option) {
-        options.add(new TreeNode(answer, option));
+    public DialogNode addChild(Component answer, Component option) {
+        options.add(new DialogNode(answer, option));
         return this;
     }
 
-    public TreeNode addChild(TreeNode node) {
+    public DialogNode addChild(DialogNode node) {
         options.add(node);
         return this;
     }
 
-    public TreeNode foreachAdd(TreeNode node) {
-        options.forEach(treeNode -> treeNode.addChild(node));
+    public DialogNode foreachAdd(DialogNode node) {
+        options.forEach(dialogNode -> dialogNode.addChild(node));
         return this;
     }
 
-    public TreeNode addExecutable(Consumer<DialogueScreen> runnable) {
+    public DialogNode addExecutable(Consumer<DialogueScreen> runnable) {
         this.screenConsumer = runnable;
         return this;
     }
 
-    public TreeNode addExecutable(int executeValue) {
+    public DialogNode addExecutable(int executeValue) {
         this.executeValue = executeValue;
         return this;
     }
@@ -136,11 +136,11 @@ public class TreeNode {
         return option;
     }
 
-    public List<TreeNode> getChildren() {
+    public List<DialogNode> getChildren() {
         return options;
     }
 
-    public static class FinalNode extends TreeNode {
+    public static class FinalNode extends DialogNode {
         private final int returnValue;
 
         public FinalNode(Component finalOption, int returnValue) {

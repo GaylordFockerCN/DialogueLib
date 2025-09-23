@@ -116,7 +116,7 @@ public class DialogueScreen extends Screen {
         this.picShowWidth = picShowWidth;
     }
 
-    public void setupDialogueChoices(List<DialogueChoiceComponent> options) {
+    protected void setupDialogueChoices(List<DialogueChoiceComponent> options) {
         this.clearWidgets();
         for (DialogueChoiceComponent option : options) {
             this.addRenderableWidget(option);
@@ -211,7 +211,7 @@ public class DialogueScreen extends Screen {
     /**
      * 回答是否全部可见
      */
-    public boolean shouldRenderOption(){
+    protected boolean shouldRenderOption(){
         if(DialogueLibConfig.ENABLE_TYPEWRITER_EFFECT.get()) {
             return this.dialogueAnswer.shouldRenderOption();
         }
@@ -241,7 +241,7 @@ public class DialogueScreen extends Screen {
         }
     }
 
-    private void renderPicture(GuiGraphics guiGraphics) {
+    protected void renderPicture(GuiGraphics guiGraphics) {
         if (PICTURE_LOCATION != null) {
             guiGraphics.blit(PICTURE_LOCATION, this.width / 2 - picShowWidth / 2, (int) ((float) this.height / 2 - picShowHeight / 1.3F), picShowWidth, picShowHeight, 0, 0, picWidth, picHeight, picWidth, picHeight);
         }
