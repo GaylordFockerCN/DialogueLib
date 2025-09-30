@@ -56,12 +56,8 @@ public class DialogueAnswerComponent {
     }
 
     /**
-     * Repositions the dialogue to the center of the screen.
      * 如果启动打字机效果，则所有文本按完整文本第一行出现的文本的最左侧定位。因为这样阅读比较舒服
-     * 先保存一份完整文本，在沿用天堂的计算定位，我真是天才
-     *
-     * @param width  The {@link Integer} for the parent screen width.
-     * @param height The {@link Integer} for the parent screen height.
+     * 先保存一份完整文本，在沿用天堂的计算定位
      */
     public void reposition(int width, int height, int yOffset) {
         for (int i = 0, j = 0; i < splitLines.size(); i++) {
@@ -77,6 +73,13 @@ public class DialogueAnswerComponent {
             j++;
         }
         this.height = this.splitLines.size() * 12;
+    }
+
+    public int getStartY() {
+        if(this.splitLines.isEmpty()) {
+            return 0;
+        }
+        return splitLines.get(0).y;
     }
 
     public void updateDialogue(Component message) {

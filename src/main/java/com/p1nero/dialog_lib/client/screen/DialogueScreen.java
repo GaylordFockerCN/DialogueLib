@@ -167,10 +167,10 @@ public class DialogueScreen extends Screen {
     protected void positionDialogue2() {
         // Dialogue answer.
         rate = 1.4F;
-        this.dialogueAnswer.reposition(this.width, (int) (this.height * rate), yOffset);//相较于天堂的下移了一点，因为是中文
-        int answerBottomY = (int) (this.height / 2.0 * rate + this.dialogueAnswer.height);
-        if(this.height / 2.0 * rate + this.dialogueAnswer.height > this.height && typewriterTimer < 0){
-            yOffset -= (answerBottomY - this.height);
+        this.dialogueAnswer.reposition(this.width, (int) (this.height * rate), yOffset);
+        int answerBottomY = this.dialogueAnswer.getStartY() + this.dialogueAnswer.height;
+        if(answerBottomY + 10 > this.height && typewriterTimer < 0){
+            yOffset -= 10;
         }
         // Dialogue choices.
         int lineNumber = 0;
