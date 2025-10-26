@@ -1,7 +1,7 @@
 package com.p1nero.dialog_lib.api;
 
 import com.p1nero.dialog_lib.DialogueLib;
-import com.p1nero.dialog_lib.capability.DialogCapabilityProvider;
+import com.p1nero.dialog_lib.capability.DialogCapabilities;
 import com.p1nero.dialog_lib.client.screen.DialogueScreenBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -19,9 +19,9 @@ public interface IEntityDialogueExtension<T extends Entity> {
     EntityType<T> getEntityType();
 
     /**
-     * 判断是否可以发起对话。以下所有的行为都在此基础上进行，无需额外判断。
+     * 判断是否可以和某玩家发起对话。以下所有的行为都在此基础上进行，无需额外判断。
      */
-    boolean canInteract(Player player, T currentTalking);
+    boolean canInteractWith(Player player, T currentTalking);
 
     /**
      * 若为true，对话时会调用lookControl和navigation（如果存在）
@@ -45,12 +45,12 @@ public interface IEntityDialogueExtension<T extends Entity> {
     }
 
     /**
-     * 和实体交互时触发，默认直接发送对话请求
+     * 和实体交互时触发，默认如果无对话中的实体则直接发送对话请求
      */
     default void onPlayerInteract(Player player, T currentTalking, InteractionHand hand) {
-        if(player instanceof ServerPlayer serverPlayer && getCurrentTalkingEntity(serverPlayer) == null) {
+        if(player instanceof ServerPlayer serverPlayer && getConservingPlayer(currentTalking) == null) {
             DialogueLib.sendDialog(currentTalking, getServerData(serverPlayer, currentTalking, hand, new CompoundTag()), serverPlayer);
-            setCurrentTalkingEntity(serverPlayer, currentTalking);
+            setConservingPlayer(serverPlayer, currentTalking);
         }
     }
 
@@ -61,9 +61,6 @@ public interface IEntityDialogueExtension<T extends Entity> {
         return senderData;
     }
 
-    /**
-     * 在这里构造你的对话
-     */
     @OnlyIn(Dist.CLIENT)
     default void openDialogScreen(LocalPlayer localPlayer, T currentTalking, CompoundTag senderData){
         DialogueScreenBuilder dialogueScreenBuilder = new DialogueScreenBuilder(currentTalking);
@@ -73,6 +70,9 @@ public interface IEntityDialogueExtension<T extends Entity> {
         }
     }
 
+    /**
+     * 在这里构造你的对话
+     */
     @OnlyIn(Dist.CLIENT)
     DialogueScreenBuilder getDialogBuilder(DialogueScreenBuilder builder, LocalPlayer localPlayer, T currentTalking, CompoundTag senderData);
 
@@ -83,10 +83,10 @@ public interface IEntityDialogueExtension<T extends Entity> {
     void handleNpcInteraction(T currentTalking, ServerPlayer player, int interactionId);
 
     /**
-     * 记录当前对话的玩家，可用于
+     * 记录当前玩家对话的实体，可用于控制实体看玩家
      */
-    default void setCurrentTalkingEntity(ServerPlayer player, T currentTalking) {
-        DialogCapabilityProvider.getDialogPlayer(player).setCurrentTalkingEntity(currentTalking);
+    default void setConservingPlayer(ServerPlayer player, T currentTalking) {
+        DialogCapabilities.getDialogPatch(currentTalking).setConservingPlayer(player);
     }
 
     default void onTalkingTick(ServerPlayer player, T currentTalking) {
@@ -96,13 +96,15 @@ public interface IEntityDialogueExtension<T extends Entity> {
     /**
      * 移除当前对话的玩家
      */
-    default void removeCurrentTalkingEntity(ServerPlayer player) {
-        DialogCapabilityProvider.getDialogPlayer(player).setCurrentTalkingEntity(null);
+    default void removeConservingPlayer(T currentTalking) {
+        DialogCapabilities.getDialogPatch(currentTalking).setConservingPlayer(null);
     }
 
-
-    default Entity getCurrentTalkingEntity(ServerPlayer player) {
-        return DialogCapabilityProvider.getDialogPlayer(player).getCurrentTalkingEntity();
+    /**
+     * 获取当前玩家对话的实体
+     */
+    default Entity getConservingPlayer(T currentTalking) {
+        return DialogCapabilities.getDialogPatch(currentTalking).getCurrentTalkingPlayer();
     }
 
 }

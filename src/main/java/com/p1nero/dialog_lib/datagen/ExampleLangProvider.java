@@ -1,4 +1,4 @@
-package com.p1nero.dialog_lib.data;
+package com.p1nero.dialog_lib.datagen;
 
 import com.p1nero.dialog_lib.api.datagen.DialogueLanguageProvider;
 import net.minecraft.data.PackOutput;

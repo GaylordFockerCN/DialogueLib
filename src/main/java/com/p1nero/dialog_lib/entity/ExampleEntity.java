@@ -61,7 +61,7 @@ public class ExampleEntity extends Mob implements IEntityNpc {
     /**
      * 翻译键对应 entity_id.answer + 编号
      *  或 entity_id.option + 编号
-     * 编号对应 {@link com.p1nero.dialog_lib.data.ExampleLangProvider}
+     * 编号对应 {@link com.p1nero.dialog_lib.datagen.ExampleLangProvider}
      */
     @Override
     @OnlyIn(Dist.CLIENT)

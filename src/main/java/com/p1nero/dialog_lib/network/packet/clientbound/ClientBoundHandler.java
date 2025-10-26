@@ -1,7 +1,7 @@
 package com.p1nero.dialog_lib.network.packet.clientbound;
 
 import com.p1nero.dialog_lib.DialogueLib;
-import com.p1nero.dialog_lib.capability.DialogCapabilityProvider;
+import com.p1nero.dialog_lib.capability.DialogCapabilities;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
@@ -16,7 +16,7 @@ public class ClientBoundHandler {
 
     public static void syncPlayerData(CompoundTag data) {
         if(Minecraft.getInstance().player != null && Minecraft.getInstance().level != null) {
-            DialogCapabilityProvider.getDialogPlayer(Minecraft.getInstance().player).loadNBTData(data);
+            DialogCapabilities.getDialogPatch(Minecraft.getInstance().player).loadNBTData(data);
         }
     }
 
