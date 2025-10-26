@@ -14,9 +14,12 @@ public class ClientBoundHandler {
         }));
     }
 
-    public static void syncPlayerData(CompoundTag data) {
+    public static void syncPlayerData(int id, CompoundTag data) {
         if(Minecraft.getInstance().player != null && Minecraft.getInstance().level != null) {
-            DialogCapabilities.getDialogPatch(Minecraft.getInstance().player).loadNBTData(data);
+            Entity entity = Minecraft.getInstance().level.getEntity(id);
+            if(entity != null){
+                DialogCapabilities.getDialogPatch(entity).loadNBTData(data);
+            }
         }
     }
 
