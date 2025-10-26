@@ -1,6 +1,6 @@
 package com.p1nero.dialog_lib.network.packet.serverbound;
 
-import com.p1nero.dialog_lib.api.IBlockNpc;
+import com.p1nero.dialog_lib.api.custom.IBlockNpc;
 import com.p1nero.dialog_lib.events.ServerNpcBlockInteractEvent;
 import com.p1nero.dialog_lib.network.packet.BasePacket;
 import net.minecraft.core.BlockPos;

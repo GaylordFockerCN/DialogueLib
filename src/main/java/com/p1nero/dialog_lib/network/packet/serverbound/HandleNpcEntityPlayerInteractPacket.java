@@ -1,6 +1,8 @@
 package com.p1nero.dialog_lib.network.packet.serverbound;
 
-import com.p1nero.dialog_lib.api.IEntityNpc;
+import com.p1nero.dialog_lib.DialogueLib;
+import com.p1nero.dialog_lib.api.custom.IEntityNpc;
+import com.p1nero.dialog_lib.capability.DialogCapabilityProvider;
 import com.p1nero.dialog_lib.events.ServerNpcEntityInteractEvent;
 import com.p1nero.dialog_lib.network.packet.BasePacket;
 import net.minecraft.network.FriendlyByteBuf;
@@ -38,6 +40,12 @@ public record HandleNpcEntityPlayerInteractPacket(int entityID, int interactionI
                             npc.setConversingPlayer(null);
                         }
                     }
+                    DialogueLib.runIfExtensionExist(serverPlayer, entity, (iEntityDialogueExtension -> {
+                        iEntityDialogueExtension.handleNpcInteraction(entity, serverPlayer, this.interactionID());
+                        if(this.interactionID() == 0) {
+                            iEntityDialogueExtension.removeCurrentTalkingEntity(serverPlayer);
+                        }
+                    }));
                 }
             }
         }

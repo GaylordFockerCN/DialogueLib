@@ -1,4 +1,4 @@
-package com.p1nero.dialog_lib.api;
+package com.p1nero.dialog_lib.api.custom;
 
 import com.p1nero.dialog_lib.network.DialoguePacketHandler;
 import com.p1nero.dialog_lib.network.DialoguePacketRelay;

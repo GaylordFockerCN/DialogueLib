@@ -1,6 +1,6 @@
 package com.p1nero.dialog_lib.entity;
 
-import com.p1nero.dialog_lib.api.IEntityNpc;
+import com.p1nero.dialog_lib.api.custom.IEntityNpc;
 import com.p1nero.dialog_lib.api.component.DialogNode;
 import com.p1nero.dialog_lib.api.goal.LookAtConservingPlayerGoal;
 import com.p1nero.dialog_lib.client.screen.DialogueScreenBuilder;

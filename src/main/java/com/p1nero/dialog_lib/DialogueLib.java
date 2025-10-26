@@ -1,37 +1,86 @@
 package com.p1nero.dialog_lib;
 
+import com.google.common.collect.Lists;
 import com.mojang.logging.LogUtils;
+import com.p1nero.dialog_lib.api.IEntityDialogueExtension;
 import com.p1nero.dialog_lib.network.DialoguePacketHandler;
 import com.p1nero.dialog_lib.network.DialoguePacketRelay;
 import com.p1nero.dialog_lib.network.packet.clientbound.NPCEntityDialoguePacket;
+import com.p1nero.dialog_lib.util.AnnotatedInstanceUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 @Mod(DialogueLib.MOD_ID)
 public class DialogueLib {
 
     public static final String MOD_ID = "p1nero_dl";
     public static final Logger LOGGER = LogUtils.getLogger();
+    public static List<IEntityDialogueExtension> EXTENSIONS = Lists.newArrayList();
+    public static Map<EntityType<?>, List<IEntityDialogueExtension>> EXTENSIONS_MAP = new HashMap<>();
 
     public DialogueLib(FMLJavaModLoadingContext context) {
         context.getModEventBus().addListener(this::commonSetup);
+        MinecraftForge.EVENT_BUS.addListener(this::entityInteract);
         context.registerConfig(ModConfig.Type.CLIENT, DialogueLibConfig.SPEC);
     }
+
     private void commonSetup(final FMLCommonSetupEvent event) {
-        DialoguePacketHandler.register();
+        event.enqueueWork(DialoguePacketHandler::register);
+        event.enqueueWork(() -> {
+            EXTENSIONS = AnnotatedInstanceUtil.getModExtensions();
+            for (IEntityDialogueExtension extension : EXTENSIONS) {
+                EntityType<?> entityType = extension.getEntityType();
+                EXTENSIONS_MAP.computeIfAbsent(entityType, k -> new ArrayList<>()).add(extension);
+            }
+        });
     }
 
-    public static void sendDialog(LivingEntity self, CompoundTag data, ServerPlayer player) {
+    private void entityInteract(PlayerInteractEvent.EntityInteract event) {
+        runIfExtensionExist(event.getEntity(), event.getTarget(), (iEntityDialogueExtension -> {
+            iEntityDialogueExtension.onPlayerInteract(event.getEntity(), event.getTarget(), event.getHand());
+            if(iEntityDialogueExtension.shouldCancelInteract(event.getEntity(), event.getTarget())) {
+                event.setCancellationResult(InteractionResult.SUCCESS);
+                event.setCanceled(true);
+            }
+        }));
+    }
+
+    public static void runIfExtensionExist(Player player, Entity self, Consumer<IEntityDialogueExtension> extensionConsumer) {
+        if(self == null) {
+            return;
+        }
+        if(EXTENSIONS_MAP.containsKey(self.getType())) {
+            EXTENSIONS_MAP.get(self.getType()).forEach(dialogueExtension -> {
+                if(dialogueExtension.canInteract(player, self)) {
+                    extensionConsumer.accept(dialogueExtension);
+                }
+            });
+        }
+    }
+
+    public static void sendDialog(Entity self, CompoundTag data, ServerPlayer player) {
         DialoguePacketRelay.sendToPlayer(DialoguePacketHandler.INSTANCE, new NPCEntityDialoguePacket(self.getId(), data), player);
     }
 
-    public static void sendDialog(LivingEntity self, ServerPlayer player) {
+    public static void sendDialog(Entity self, ServerPlayer player) {
         DialoguePacketRelay.sendToPlayer(DialoguePacketHandler.INSTANCE, new NPCEntityDialoguePacket(self.getId(), new CompoundTag()), player);
     }
 
