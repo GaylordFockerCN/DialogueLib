@@ -11,6 +11,7 @@ import com.p1nero.dialog_lib.network.packet.clientbound.NPCEntityDialoguePacket;
 import com.p1nero.dialog_lib.util.AnnotatedInstanceUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -60,7 +61,7 @@ public class DialogueLib {
     private void dialog_lib$onEntityInteract(PlayerInteractEvent.EntityInteract event) {
         runIfExtensionExist(event.getEntity(), event.getTarget(), (iEntityDialogueExtension -> {
             iEntityDialogueExtension.onPlayerInteract(event.getEntity(), event.getTarget(), event.getHand());
-            if(iEntityDialogueExtension.shouldCancelInteract(event.getEntity(), event.getTarget())) {
+            if(iEntityDialogueExtension.shouldCancelInteract(event.getEntity(), event.getTarget(), event.getHand())) {
                 event.setCancellationResult(InteractionResult.SUCCESS);
                 event.setCanceled(true);
             }
@@ -107,6 +108,10 @@ public class DialogueLib {
 
     public static void sendDialog(Entity self, ServerPlayer player) {
         DialoguePacketRelay.sendToPlayer(DialoguePacketHandler.INSTANCE, new NPCEntityDialoguePacket(self.getId(), new CompoundTag()), player);
+    }
+
+    public static void simulateInteract(Entity entity, ServerPlayer serverPlayer, InteractionHand hand) {
+        runIfExtensionExist(serverPlayer, entity, (iEntityDialogueExtension -> iEntityDialogueExtension.onPlayerInteract(serverPlayer, entity, hand)));
     }
 
 }

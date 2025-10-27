@@ -40,7 +40,7 @@ public interface IEntityDialogueExtension<T extends Entity> {
     /**
      * 是否取消原先的交互
      */
-    default boolean shouldCancelInteract(Player player, T currentTalking) {
+    default boolean shouldCancelInteract(Player player, T currentTalking, InteractionHand hand) {
         return true;
     }
 
