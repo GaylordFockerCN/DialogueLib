@@ -1,5 +1,5 @@
 package com.p1nero.dialog_lib.network.packet.clientbound;
-import com.p1nero.dialog_lib.api.custom.IEntityNpc;
+import com.p1nero.dialog_lib.api.entity.custom.IEntityNpc;
 import com.p1nero.dialog_lib.events.ClientNpcEntityDialogueEvent;
 import com.p1nero.dialog_lib.network.packet.BasePacket;
 import net.minecraft.client.Minecraft;
@@ -36,7 +36,7 @@ public record NPCEntityDialoguePacket(int id, CompoundTag data) implements BaseP
                     npc.setConversingPlayer(playerEntity);
                     npc.openDialogueScreen(this.data());
                 }
-                ClientBoundHandler.openDialogScreen(entity, data);
+                ClientBoundHandler.openEntityDialogScreen(entity, data);
             }
         }
     }

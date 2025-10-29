@@ -6,6 +6,7 @@ import com.p1nero.dialog_lib.client.screen.component.DialogueOptionComponent;
 import com.p1nero.dialog_lib.mixin.MobInvoker;
 import com.p1nero.dialog_lib.network.DialoguePacketHandler;
 import com.p1nero.dialog_lib.network.DialoguePacketRelay;
+import com.p1nero.dialog_lib.network.packet.serverbound.HandleCustomInteractPacket;
 import com.p1nero.dialog_lib.network.packet.serverbound.HandleNpcBlockPlayerInteractPacket;
 import com.p1nero.dialog_lib.network.packet.serverbound.HandleNpcEntityPlayerInteractPacket;
 import net.minecraft.ChatFormatting;
@@ -21,15 +22,15 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 public class DialogueScreen extends Screen {
+    protected String modId = "";
     protected ResourceLocation PICTURE_LOCATION = null;
     public static final int BACKGROUND_COLOR = 0xCC000000;
     public static final int BORDER_COLOR = 0xFFFFFFFF;
@@ -39,53 +40,49 @@ public class DialogueScreen extends Screen {
     private float rate;
     private boolean isSilent;
     private int currentOptionsCount;
-    protected final DialogueAnswerComponent dialogueAnswer;
+    protected DialogueAnswerComponent dialogueAnswer;
     @Nullable
     protected Entity entity;
     @Nullable
     protected BlockPos pos;
     public final int typewriterInterval;
     private int typewriterTimer = 0;
-    @Nullable
-    EntityType<?> entityType;
 
-    public DialogueScreen(@NotNull Entity entity) {
-        super(entity.getDisplayName());
+    public DialogueScreen(String modId) {
+        super(Component.empty());
+        this.modId = modId;
         typewriterInterval = DialogueLibConfig.TYPEWRITER_EFFECT_INTERVAL.get();
-        this.dialogueAnswer = new DialogueAnswerComponent(this.buildDialogueAnswerName(entity.getDisplayName().copy().withStyle(ChatFormatting.GOLD)).append(": "));
+        this.dialogueAnswer = new DialogueAnswerComponent(Component.empty());
+    }
+
+    public void setEntity(@NotNull Entity entity) {
+        this.dialogueAnswer = new DialogueAnswerComponent(this.buildDialogueAnswerName(entity.getDisplayName()).append(": "));
         this.entity = entity;
-        this.entityType = entity.getType();
     }
 
-    public DialogueScreen(Component name) {
-        super(name);
-        typewriterInterval = DialogueLibConfig.TYPEWRITER_EFFECT_INTERVAL.get();
-        this.dialogueAnswer = new DialogueAnswerComponent(name);
+    public void setBlockState(BlockState blockState, BlockPos pos) {
+        this.dialogueAnswer = new DialogueAnswerComponent(this.buildDialogueAnswerName(blockState.getBlock().getName()).append(": "));
+        this.pos = pos;
     }
 
-    public DialogueScreen(Component name, @NotNull Entity entity) {
-        this(name);
-        this.entity = entity;
-        this.entityType = entity.getType();
+    public void setCustomTitle(Component customTitle) {
+        this.dialogueAnswer = new DialogueAnswerComponent(customTitle);
     }
 
-    public DialogueScreen(BlockEntity blockEntity) {
-        this(blockEntity.getBlockState().getBlock().getName(), blockEntity);
-    }
-
-    public DialogueScreen(Component name, BlockEntity blockEntity) {
-        super(name);
-        typewriterInterval = DialogueLibConfig.TYPEWRITER_EFFECT_INTERVAL.get();
-        this.dialogueAnswer = new DialogueAnswerComponent(blockEntity.getBlockState().getBlock().getName());
-        this.pos = blockEntity.getBlockPos();
+    public void setModId(String modId) {
+        this.modId = modId;
     }
 
     /**
-     * 在这里实现对话逻辑调用
+     * 默认名字风格
      */
+    public MutableComponent buildDialogueAnswerName(Component component) {
+        return Component.literal("[").append(component.copy().withStyle(ChatFormatting.GOLD)).append("]");
+    }
+
     @Override
     protected void init() {
-        positionDialogue();//不填的话用builder创造出来的对话框第一个对话会错误显示
+        positionDialogue();
     }
 
     public void setPicture(ResourceLocation resourceLocation) {
@@ -120,7 +117,7 @@ public class DialogueScreen extends Screen {
         this.picShowWidth = picShowWidth;
     }
 
-    protected void setupDialogueChoices(List<DialogueOptionComponent> options) {
+    public void setupDialogueOptions(List<DialogueOptionComponent> options) {
         currentOptionsCount = options.size();
         this.clearWidgets();
         for (DialogueOptionComponent option : options) {
@@ -130,7 +127,7 @@ public class DialogueScreen extends Screen {
     }
 
     /**
-     * Repositions the dialogue answer and the player's dialogue choices based on the amount of choices.
+     * 矫正位置，两种风格
      */
     protected void positionDialogue() {
         if (DialogueLibConfig.OPTION_IN_CENTER.get()) {
@@ -164,6 +161,7 @@ public class DialogueScreen extends Screen {
             }
         }
     }
+
     protected void positionDialogue2() {
         // Dialogue answer.
         rate = 1.4F;
@@ -184,7 +182,7 @@ public class DialogueScreen extends Screen {
         }
     }
 
-    protected void setDialogueAnswer(Component component) {
+    public void setDialogueAnswer(Component component) {
         if (DialogueLibConfig.ENABLE_TYPEWRITER_EFFECT.get()) {
             this.dialogueAnswer.updateTypewriterDialogue(component);
         } else {
@@ -193,15 +191,16 @@ public class DialogueScreen extends Screen {
 
     }
 
-    public MutableComponent buildDialogueAnswerName(Component component) {
-        return Component.literal("[").append(component.copy().withStyle(ChatFormatting.GOLD)).append("]");
-    }
-
-    protected void finishChat(int interactionID) {
+    public void finishChat(int interactionID) {
         if (pos != null) {
             DialoguePacketRelay.sendToServer(DialoguePacketHandler.INSTANCE, new HandleNpcBlockPlayerInteractPacket(pos, interactionID));
         }
-        DialoguePacketRelay.sendToServer(DialoguePacketHandler.INSTANCE, new HandleNpcEntityPlayerInteractPacket(this.entity == null ? HandleNpcEntityPlayerInteractPacket.NO_ENTITY : this.entity.getId(), interactionID));
+        if (entity == null) {
+            DialoguePacketRelay.sendToServer(DialoguePacketHandler.INSTANCE, new HandleCustomInteractPacket(modId, interactionID));
+        } else {
+            DialoguePacketRelay.sendToServer(DialoguePacketHandler.INSTANCE, new HandleNpcEntityPlayerInteractPacket(this.entity.getId(), interactionID));
+        }
+
         PICTURE_LOCATION = null;
         yOffset = 0;
         picHeight = 144;
@@ -226,7 +225,7 @@ public class DialogueScreen extends Screen {
     /**
      * 发包但不关闭窗口
      */
-    protected void execute(int interactionID) {
+    public void execute(int interactionID) {
         DialoguePacketRelay.sendToServer(DialoguePacketHandler.INSTANCE, new HandleNpcEntityPlayerInteractPacket(this.entity == null ? HandleNpcEntityPlayerInteractPacket.NO_ENTITY : this.entity.getId(), interactionID));
     }
 
@@ -242,9 +241,9 @@ public class DialogueScreen extends Screen {
     }
 
     /**
-     * 回答是否全部可见
+     * 检查回答是否全部可见
      */
-    protected boolean shouldRenderOption(){
+    public boolean shouldRenderOption(){
         if(DialogueLibConfig.ENABLE_TYPEWRITER_EFFECT.get()) {
             return this.dialogueAnswer.shouldRenderOption();
         }

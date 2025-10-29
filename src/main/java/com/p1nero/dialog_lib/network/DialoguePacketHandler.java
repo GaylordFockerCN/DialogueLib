@@ -5,6 +5,7 @@ import com.p1nero.dialog_lib.network.packet.BasePacket;
 import com.p1nero.dialog_lib.network.packet.clientbound.NPCBlockDialoguePacket;
 import com.p1nero.dialog_lib.network.packet.clientbound.NPCEntityDialoguePacket;
 import com.p1nero.dialog_lib.network.packet.clientbound.SyncDialogPlayerDataPacket;
+import com.p1nero.dialog_lib.network.packet.serverbound.HandleCustomInteractPacket;
 import com.p1nero.dialog_lib.network.packet.serverbound.HandleNpcBlockPlayerInteractPacket;
 import com.p1nero.dialog_lib.network.packet.serverbound.HandleNpcEntityPlayerInteractPacket;
 import net.minecraft.network.FriendlyByteBuf;
@@ -28,6 +29,7 @@ public class DialoguePacketHandler {
         register(NPCBlockDialoguePacket.class, NPCBlockDialoguePacket::decode);
         register(HandleNpcEntityPlayerInteractPacket.class, HandleNpcEntityPlayerInteractPacket::decode);
         register(HandleNpcBlockPlayerInteractPacket.class, HandleNpcBlockPlayerInteractPacket::decode);
+        register(HandleCustomInteractPacket.class, HandleCustomInteractPacket::decode);
         register(SyncDialogPlayerDataPacket.class, SyncDialogPlayerDataPacket::decode);
     }
 

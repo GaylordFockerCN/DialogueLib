@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "p1nero_dl.refmap.json",
   "mixins": [
+    "LanguageProviderAccessor",
     "MobInvoker"
   ],
   "client": [

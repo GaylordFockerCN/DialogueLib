@@ -1,9 +1,12 @@
 package com.p1nero.dialog_lib.entity;
 
-import com.p1nero.dialog_lib.api.custom.IEntityNpc;
+import com.p1nero.dialog_lib.DialogueLib;
+import com.p1nero.dialog_lib.api.entity.custom.IEntityNpc;
 import com.p1nero.dialog_lib.api.component.DialogNode;
-import com.p1nero.dialog_lib.api.goal.LookAtConservingPlayerGoal;
-import com.p1nero.dialog_lib.client.screen.DialogueScreenBuilder;
+import com.p1nero.dialog_lib.api.entity.goal.LookAtConservingPlayerGoal;
+import com.p1nero.dialog_lib.client.screen.DialogueScreen;
+import com.p1nero.dialog_lib.client.screen.builder.DialogueScreenBuilder;
+import com.p1nero.dialog_lib.client.screen.builder.StreamDialogueScreenBuilder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,11 +21,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.jetbrains.annotations.Nullable;
 
 public class ExampleEntity extends Mob implements IEntityNpc {
-
-    private Player conservingPlayer;
 
     protected ExampleEntity(EntityType<? extends Mob> entityType, Level level) {
         super(entityType, level);
@@ -52,31 +52,35 @@ public class ExampleEntity extends Mob implements IEntityNpc {
         return super.mobInteract(player, hand);
     }
 
+    /**
+     * 对话或交易时看着玩家
+     */
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(0, new LookAtConservingPlayerGoal<>(this));//对话或交易时看着玩家
+        this.goalSelector.addGoal(0, new LookAtConservingPlayerGoal<>(this));
     }
 
     /**
-     * 翻译键对应 entity_id.answer + 编号
-     *  或 entity_id.option + 编号
+     * 翻译键对应 entity_id.mod_id.answer + 编号
+     *  或 entity_id.mod_id.option + 编号
      * 编号对应 {@link com.p1nero.dialog_lib.datagen.ExampleLangProvider}
      */
     @Override
     @OnlyIn(Dist.CLIENT)
-    public DialogueScreenBuilder getDialogueBuilder(CompoundTag senderData) {
-        DialogueScreenBuilder builder = new DialogueScreenBuilder(this);
+    public DialogueScreen getDialogueScreen(CompoundTag senderData) {
+        StreamDialogueScreenBuilder builder = new StreamDialogueScreenBuilder(this, DialogueLib.MOD_ID);
 
         if(senderData.getBoolean("from_hurt")) {
             builder.start(0)
-                    .addChoice(0,1)
+                    .addOption(0,1)
                     .thenExecute(1) //进入该对话节点后，发包给服务端处理
                     .thenExecute((dialogueScreen -> {
                         //进入该对话节点后，在客户端做些什么。比如更新当前窗口的图片展示
                         dialogueScreen.setPicture(ResourceLocation.parse("minecraft:test.png"));
                     }))
-                    .addChoice(1, 2);
+                    .addOption(1, 2);
+            return builder.build();
         } else {
             DialogNode root = builder.newNode(3);
 
@@ -92,11 +96,13 @@ public class ExampleEntity extends Mob implements IEntityNpc {
 
             root.addChild(node1)
                     .addChild(node2);
+            return builder.buildWith(root);
         }
-
-        return builder;
     }
 
+    /**
+     * 如果要终止对话，记得setConversingPlayer 为 null，否则会一直占用对话
+     */
     @Override
     public void handleNpcInteraction(ServerPlayer player, int interactionID) {
         if (interactionID == 1) {
@@ -105,7 +111,7 @@ public class ExampleEntity extends Mob implements IEntityNpc {
 
         if(interactionID == 2) {
             doSomething();
-            this.setConversingPlayer(null);//如果要终止对话，记得setConversingPlayer 为 null
+            this.setConversingPlayer(null);
         }
 
     }
@@ -114,13 +120,4 @@ public class ExampleEntity extends Mob implements IEntityNpc {
 
     }
 
-    @Override
-    public void setConversingPlayer(@Nullable Player player) {
-        this.conservingPlayer = player;
-    }
-
-    @Override
-    public @Nullable Player getConversingPlayer() {
-        return conservingPlayer;
-    }
 }

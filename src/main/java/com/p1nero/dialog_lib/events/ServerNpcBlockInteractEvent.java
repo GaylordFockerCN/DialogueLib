@@ -3,17 +3,18 @@ package com.p1nero.dialog_lib.events;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
 
 @Cancelable
 public class ServerNpcBlockInteractEvent extends Event {
     private final BlockPos pos;
-    private final BlockEntity self;
+    private final BlockState self;
     private final ServerPlayer serverPlayer;
     private final int interactId;
 
-    public ServerNpcBlockInteractEvent(BlockPos pos, BlockEntity self, ServerPlayer serverPlayer, int interactId) {
+    public ServerNpcBlockInteractEvent(BlockPos pos, BlockState self, ServerPlayer serverPlayer, int interactId) {
         this.self = self;
         this.serverPlayer = serverPlayer;
         this.pos = pos;
@@ -28,7 +29,7 @@ public class ServerNpcBlockInteractEvent extends Event {
         return serverPlayer;
     }
 
-    public BlockEntity getSelf() {
+    public BlockState getSelf() {
         return self;
     }
 

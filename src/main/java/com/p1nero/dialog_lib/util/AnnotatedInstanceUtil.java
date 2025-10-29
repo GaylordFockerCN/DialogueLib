@@ -1,8 +1,10 @@
 package com.p1nero.dialog_lib.util;
 
 import com.p1nero.dialog_lib.DialogueLib;
-import com.p1nero.dialog_lib.api.EntityDialogueExtension;
-import com.p1nero.dialog_lib.api.IEntityDialogueExtension;
+import com.p1nero.dialog_lib.api.block.BlockDialogueExtension;
+import com.p1nero.dialog_lib.api.block.IBlockDialogueExtension;
+import com.p1nero.dialog_lib.api.entity.EntityDialogueExtension;
+import com.p1nero.dialog_lib.api.entity.IEntityDialogueExtension;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.ModFileScanData;
 import org.objectweb.asm.Type;
@@ -13,8 +15,13 @@ import java.util.*;
  * Copy from <a href="https://github.com/mezz/JustEnoughItems/blob/1.16/src/main/java/mezz/jei/util/AnnotatedInstanceUtil.java">...</a>
  */
 public final class AnnotatedInstanceUtil {
-    public static List<IEntityDialogueExtension> getModExtensions() {
+
+    public static List<IEntityDialogueExtension> getModEntityExtensions() {
         return getInstances(EntityDialogueExtension.class, IEntityDialogueExtension.class);
+    }
+
+    public static List<IBlockDialogueExtension> getModBlockExtensions() {
+        return getInstances(BlockDialogueExtension.class, IBlockDialogueExtension.class);
     }
 
     @SuppressWarnings("SameParameterValue")

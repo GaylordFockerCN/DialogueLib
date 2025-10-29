@@ -1,16 +1,24 @@
 package com.p1nero.dialog_lib.network.packet.clientbound;
 
 import com.p1nero.dialog_lib.DialogueLib;
-import com.p1nero.dialog_lib.capability.DialogCapabilities;
+import com.p1nero.dialog_lib.capability.DialogLibCapabilities;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class ClientBoundHandler {
 
-    public static void openDialogScreen(Entity entity, CompoundTag data) {
-        DialogueLib.runIfExtensionExist(Minecraft.getInstance().player, entity, (iEntityDialogueExtension -> {
+    public static void openEntityDialogScreen(Entity entity, CompoundTag data) {
+        DialogueLib.runIfEntityExtensionExist(Minecraft.getInstance().player, entity, (iEntityDialogueExtension -> {
             iEntityDialogueExtension.openDialogScreen(Minecraft.getInstance().player, entity, data);
+        }));
+    }
+
+    public static void openBlockDialogScreen(BlockState blockState, BlockPos pos, CompoundTag data) {
+        DialogueLib.runIfBlockExtensionExist(Minecraft.getInstance().player, blockState, pos, (iBlockDialogueExtension -> {
+            iBlockDialogueExtension.openDialogScreen(Minecraft.getInstance().player, blockState, pos, data);
         }));
     }
 
@@ -18,7 +26,7 @@ public class ClientBoundHandler {
         if(Minecraft.getInstance().player != null && Minecraft.getInstance().level != null) {
             Entity entity = Minecraft.getInstance().level.getEntity(id);
             if(entity != null){
-                DialogCapabilities.getDialogPatch(entity).loadNBTData(data);
+                DialogLibCapabilities.getDialogPatch(entity).loadNBTData(data);
             }
         }
     }

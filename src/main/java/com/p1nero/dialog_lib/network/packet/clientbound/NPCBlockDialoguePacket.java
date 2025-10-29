@@ -1,6 +1,6 @@
 package com.p1nero.dialog_lib.network.packet.clientbound;
 
-import com.p1nero.dialog_lib.api.custom.IBlockNpc;
+import com.p1nero.dialog_lib.api.block.custom.IBlockEntityNpc;
 import com.p1nero.dialog_lib.events.ClientNpcBlockDialogueEvent;
 import com.p1nero.dialog_lib.network.packet.BasePacket;
 import net.minecraft.client.Minecraft;
@@ -9,6 +9,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.MinecraftForge;
 
 public record NPCBlockDialoguePacket(BlockPos pos, CompoundTag data) implements BasePacket {
@@ -25,16 +26,15 @@ public record NPCBlockDialoguePacket(BlockPos pos, CompoundTag data) implements 
     @Override
     public void execute(Player playerEntity) {
         if (Minecraft.getInstance().player != null && Minecraft.getInstance().level != null) {
-            BlockEntity blockEntity = Minecraft.getInstance().level.getBlockEntity(pos);
-            if(blockEntity == null) {
-                return;
-            }
-            ClientNpcBlockDialogueEvent event = new ClientNpcBlockDialogueEvent(pos, blockEntity, Minecraft.getInstance().player, data);
+            BlockState blockState = Minecraft.getInstance().level.getBlockState(pos);
+            ClientNpcBlockDialogueEvent event = new ClientNpcBlockDialogueEvent(pos, blockState, Minecraft.getInstance().player, data);
             MinecraftForge.EVENT_BUS.post(event);
             if(!event.isCanceled()) {
-                if (blockEntity instanceof IBlockNpc npc) {
+                BlockEntity blockEntity = Minecraft.getInstance().level.getBlockEntity(pos);
+                if (blockEntity instanceof IBlockEntityNpc npc) {
                     npc.openDialogueScreen(this.data());
                 }
+                ClientBoundHandler.openBlockDialogScreen(blockState, pos, data);
             }
         }
     }

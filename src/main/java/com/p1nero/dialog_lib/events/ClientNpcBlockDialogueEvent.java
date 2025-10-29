@@ -4,23 +4,24 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
 
 @Cancelable
 public class ClientNpcBlockDialogueEvent extends Event {
-    private final BlockEntity self;
+    private final BlockState self;
     private final LocalPlayer localPlayer;
     private final BlockPos pos;
     private final CompoundTag serverData;
-    public ClientNpcBlockDialogueEvent(BlockPos pos, BlockEntity self, LocalPlayer localPlayer, CompoundTag serverData) {
+    public ClientNpcBlockDialogueEvent(BlockPos pos, BlockState self, LocalPlayer localPlayer, CompoundTag serverData) {
         this.self = self;
         this.localPlayer = localPlayer;
         this.pos = pos;
         this.serverData = serverData;
     }
 
-    public BlockEntity getSelf() {
+    public BlockState getSelf() {
         return self;
     }
 
