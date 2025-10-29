@@ -3,7 +3,6 @@ package com.p1nero.dialog_lib.api.entity;
 import com.p1nero.dialog_lib.DialogueLib;
 import com.p1nero.dialog_lib.capability.DialogLibCapabilities;
 import com.p1nero.dialog_lib.client.screen.DialogueScreen;
-import com.p1nero.dialog_lib.client.screen.builder.DialogueScreenBuilder;
 import com.p1nero.dialog_lib.client.screen.builder.StreamDialogueScreenBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;

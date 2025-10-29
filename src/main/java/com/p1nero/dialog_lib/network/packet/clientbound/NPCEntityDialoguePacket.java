@@ -1,4 +1,5 @@
 package com.p1nero.dialog_lib.network.packet.clientbound;
+
 import com.p1nero.dialog_lib.api.entity.custom.IEntityNpc;
 import com.p1nero.dialog_lib.events.ClientNpcEntityDialogueEvent;
 import com.p1nero.dialog_lib.network.packet.BasePacket;

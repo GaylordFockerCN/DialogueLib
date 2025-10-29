@@ -5,7 +5,6 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = DialogueLib.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class DialogueLibConfig {
-    private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
     public static final ForgeConfigSpec.BooleanValue OPTION_IN_CENTER;
     public static final ForgeConfigSpec.BooleanValue ENABLE_BACKGROUND;
     public static final ForgeConfigSpec.BooleanValue FADED_BACKGROUND;

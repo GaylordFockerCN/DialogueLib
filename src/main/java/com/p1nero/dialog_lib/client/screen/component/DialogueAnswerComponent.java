@@ -10,13 +10,6 @@ import net.minecraft.util.FormattedCharSequence;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * P1nero:添加了实现打字机效果
- * A widget to handle an NPC's key and their response inside the dialogue screen.
- *
- * @author P1nero
- * @author The Aether
- */
 public class DialogueAnswerComponent {
     //分割后的对话
     private final List<NpcDialogueElement> splitLines;
