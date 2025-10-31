@@ -42,7 +42,7 @@ public record HandleNpcEntityPlayerInteractPacket(int entityID, int interactionI
                     DialogueLib.runIfEntityExtensionExist(serverPlayer, entity, (iEntityDialogueExtension -> {
                         iEntityDialogueExtension.handleNpcInteraction(entity, serverPlayer, this.interactionID());
                         if(this.interactionID() == 0) {
-                            iEntityDialogueExtension.removeConservingPlayer(serverPlayer);
+                            iEntityDialogueExtension.removeConservingPlayer(entity);
                         }
                     }));
                 }
