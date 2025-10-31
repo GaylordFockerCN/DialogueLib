@@ -1,7 +1,7 @@
 package com.p1nero.dialog_lib.api.entity;
 
 import com.p1nero.dialog_lib.DialogueLib;
-import com.p1nero.dialog_lib.capability.DialogLibCapabilities;
+import com.p1nero.dialog_lib.capability.DialogueLibCapabilities;
 import com.p1nero.dialog_lib.client.screen.DialogueScreen;
 import com.p1nero.dialog_lib.client.screen.builder.StreamDialogueScreenBuilder;
 import net.minecraft.client.Minecraft;
@@ -9,11 +9,13 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.Nullable;
 
 public interface IEntityDialogueExtension<T extends Entity> {
 
@@ -43,10 +45,12 @@ public interface IEntityDialogueExtension<T extends Entity> {
     }
 
     /**
-     * 是否取消原先的交互
+     * 是否取消原先的交互，注意，双端都会触发！
+     * null表示不取消原先的交互，否则返回一个原先交互的替代值，并取消原先的交互
      */
-    default boolean shouldCancelInteract(Player player, T currentTalking, InteractionHand hand) {
-        return true;
+    @Nullable
+    default InteractionResult shouldCancelInteract(Player player, T currentTalking, InteractionHand hand) {
+        return null;
     }
 
     /**
@@ -91,7 +95,7 @@ public interface IEntityDialogueExtension<T extends Entity> {
      * 记录当前玩家对话的实体，可用于控制实体看玩家
      */
     default void setConservingPlayer(ServerPlayer player, T currentTalking) {
-        DialogLibCapabilities.getDialogPatch(currentTalking).setConservingPlayer(player);
+        DialogueLibCapabilities.getDialogPatch(currentTalking).setConservingPlayer(player);
     }
 
     default void onTalkingTick(ServerPlayer player, T currentTalking) {
@@ -102,14 +106,14 @@ public interface IEntityDialogueExtension<T extends Entity> {
      * 移除当前对话的玩家
      */
     default void removeConservingPlayer(T currentTalking) {
-        DialogLibCapabilities.getDialogPatch(currentTalking).setConservingPlayer(null);
+        DialogueLibCapabilities.setConservingPlayer(currentTalking, null);
     }
 
     /**
      * 获取当前玩家对话的实体
      */
     default Entity getConservingPlayer(T currentTalking) {
-        return DialogLibCapabilities.getDialogPatch(currentTalking).getCurrentTalkingPlayer();
+        return DialogueLibCapabilities.getDialogPatch(currentTalking).getCurrentTalkingPlayer();
     }
 
 }

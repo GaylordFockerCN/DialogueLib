@@ -6,7 +6,7 @@ import com.p1nero.dialog_lib.api.block.IBlockDialogueExtension;
 import com.p1nero.dialog_lib.api.entity.IEntityDialogueExtension;
 import com.p1nero.dialog_lib.api.entity.custom.IEntityNpc;
 import com.p1nero.dialog_lib.capability.DialogEntityPatch;
-import com.p1nero.dialog_lib.capability.DialogLibCapabilities;
+import com.p1nero.dialog_lib.capability.DialogueLibCapabilities;
 import com.p1nero.dialog_lib.network.DialoguePacketHandler;
 import com.p1nero.dialog_lib.network.DialoguePacketRelay;
 import com.p1nero.dialog_lib.network.packet.clientbound.NPCBlockDialoguePacket;
@@ -74,8 +74,9 @@ public class DialogueLib {
     private void dialog_lib$onEntityInteract(PlayerInteractEvent.EntityInteract event) {
         runIfEntityExtensionExist(event.getEntity(), event.getTarget(), (iEntityDialogueExtension -> {
             iEntityDialogueExtension.onPlayerInteract(event.getEntity(), event.getTarget(), event.getHand());
-            if(iEntityDialogueExtension.shouldCancelInteract(event.getEntity(), event.getTarget(), event.getHand())) {
-                event.setCancellationResult(InteractionResult.SUCCESS);
+            InteractionResult interactionResult = iEntityDialogueExtension.shouldCancelInteract(event.getEntity(), event.getTarget(), event.getHand());
+            if(interactionResult != null) {
+                event.setCancellationResult(interactionResult);
                 event.setCanceled(true);
             }
         }));
@@ -98,7 +99,7 @@ public class DialogueLib {
      */
     private void dialog_lib$onLivingTick(LivingEvent.LivingTickEvent event) {
         if(ENTITY_EXTENSIONS_MAP.containsKey(event.getEntity().getType())) {
-            DialogEntityPatch patch = DialogLibCapabilities.getDialogPatch(event.getEntity());
+            DialogEntityPatch patch = DialogueLibCapabilities.getDialogPatch(event.getEntity());
             Player player = patch.getCurrentTalkingPlayer();
             if(player instanceof ServerPlayer) {
                 runIfEntityExtensionExist(player, event.getEntity(), iEntityDialogueExtension -> {

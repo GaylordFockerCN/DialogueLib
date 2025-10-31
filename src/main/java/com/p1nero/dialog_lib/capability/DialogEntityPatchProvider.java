@@ -11,7 +11,7 @@ import net.minecraftforge.common.util.NonNullSupplier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class DialogEntityPatchProvider implements ICapabilityProvider, NonNullSupplier<DialogEntityPatch>, INBTSerializable<CompoundTag> {
+public class DialogEntityPatchProvider implements ICapabilityProvider, NonNullSupplier<DialogEntityPatch> {
 
     private final DialogEntityPatch dialogEntityPatch;
 
@@ -23,23 +23,23 @@ public class DialogEntityPatchProvider implements ICapabilityProvider, NonNullSu
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction direction) {
-        if(capability == DialogLibCapabilities.DIALOG_ENTITY){
+        if(capability == DialogueLibCapabilities.DIALOG_ENTITY){
             return optional.cast();
         }
         return LazyOptional.empty();
     }
 
-    @Override
-    public CompoundTag serializeNBT() {
-        CompoundTag tag = new CompoundTag();
-        dialogEntityPatch.saveNBTData(tag);
-        return tag;
-    }
-
-    @Override
-    public void deserializeNBT(CompoundTag tag) {
-        dialogEntityPatch.loadNBTData(tag);
-    }
+//    @Override
+//    public CompoundTag serializeNBT() {
+//        CompoundTag tag = new CompoundTag();
+//        dialogEntityPatch.saveNBTData(tag);
+//        return tag;
+//    }
+//
+//    @Override
+//    public void deserializeNBT(CompoundTag tag) {
+//        dialogEntityPatch.loadNBTData(tag);
+//    }
 
     @Override
     public @NotNull DialogEntityPatch get() {

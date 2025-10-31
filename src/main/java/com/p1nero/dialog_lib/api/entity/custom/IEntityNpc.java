@@ -1,7 +1,7 @@
 package com.p1nero.dialog_lib.api.entity.custom;
 
 import com.p1nero.dialog_lib.api.entity.goal.LookAtConservingPlayerGoal;
-import com.p1nero.dialog_lib.capability.DialogLibCapabilities;
+import com.p1nero.dialog_lib.capability.DialogueLibCapabilities;
 import com.p1nero.dialog_lib.client.screen.DialogueScreen;
 import com.p1nero.dialog_lib.network.DialoguePacketHandler;
 import com.p1nero.dialog_lib.network.DialoguePacketRelay;
@@ -52,12 +52,12 @@ public interface IEntityNpc {
     void handleNpcInteraction(ServerPlayer player, int interactionID);
 
     default void setConversingPlayer(@Nullable Player player) {
-        DialogLibCapabilities.setConservingPlayer(asEntity(), player);
+        DialogueLibCapabilities.setConservingPlayer(asEntity(), player);
     }
 
     @Nullable
     default Player getConversingPlayer() {
-        return DialogLibCapabilities.getConservingPlayer(asEntity());
+        return DialogueLibCapabilities.getConservingPlayer(asEntity());
     }
 
     /**

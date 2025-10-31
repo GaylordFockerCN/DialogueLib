@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Mod.EventBusSubscriber(modid = DialogueLib.MOD_ID)
-public class DialogLibCapabilities {
+public class DialogueLibCapabilities {
 
     public static Capability<DialogEntityPatch> DIALOG_ENTITY = CapabilityManager.get(new CapabilityToken<>() {});
 
@@ -43,7 +43,7 @@ public class DialogLibCapabilities {
         if(entity == null) {
             return null;
         }
-        return entity.getCapability(DialogLibCapabilities.DIALOG_ENTITY).orElse(null);
+        return entity.getCapability(DialogueLibCapabilities.DIALOG_ENTITY).orElse(null);
     }
 
     @Nullable
@@ -51,9 +51,8 @@ public class DialogLibCapabilities {
         return getDialogPatch(entity).getCurrentTalkingPlayer();
     }
 
-    public static void setConservingPlayer(Entity entity, Player player) {
+    public static void setConservingPlayer(Entity entity, @Nullable Player player) {
         getDialogPatch(entity).setConservingPlayer(player);
-        syncToClient(entity);
     }
 
     public static void syncToClient(@NotNull Entity entity) {

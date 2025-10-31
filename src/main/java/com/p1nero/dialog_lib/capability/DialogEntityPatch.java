@@ -29,6 +29,9 @@ public class DialogEntityPatch {
         } else {
             conservingPlayerUUID = null;
         }
+        if(!original.level().isClientSide) {
+            DialogueLibCapabilities.syncToClient(original);
+        }
     }
 
     public @Nullable Player getCurrentTalkingPlayer() {

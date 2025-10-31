@@ -1,7 +1,7 @@
 package com.p1nero.dialog_lib.network.packet.clientbound;
 
 import com.p1nero.dialog_lib.DialogueLib;
-import com.p1nero.dialog_lib.capability.DialogLibCapabilities;
+import com.p1nero.dialog_lib.capability.DialogueLibCapabilities;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -26,7 +26,7 @@ public class ClientBoundHandler {
         if(Minecraft.getInstance().player != null && Minecraft.getInstance().level != null) {
             Entity entity = Minecraft.getInstance().level.getEntity(id);
             if(entity != null){
-                DialogLibCapabilities.getDialogPatch(entity).loadNBTData(data);
+                DialogueLibCapabilities.getDialogPatch(entity).loadNBTData(data);
             }
         }
     }
