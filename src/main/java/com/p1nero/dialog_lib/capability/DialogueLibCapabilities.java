@@ -40,10 +40,7 @@ public class DialogueLibCapabilities {
     }
 
     public static DialogEntityPatch getDialogPatch(Entity entity) {
-        if(entity == null) {
-            return null;
-        }
-        return entity.getCapability(DialogueLibCapabilities.DIALOG_ENTITY).orElse(null);
+        return entity.getCapability(DialogueLibCapabilities.DIALOG_ENTITY).orElse(new DialogEntityPatch(entity));
     }
 
     @Nullable
