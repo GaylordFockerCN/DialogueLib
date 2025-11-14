@@ -16,11 +16,11 @@ public class DialogueOptionComponent extends Button {
 
     @Override
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        if(isHovered() || isFocused() || DialogueLibConfig.ENABLE_OPT_BACKGROUND.get()) {
+        if(isHoveredOrFocused() || DialogueLibConfig.ENABLE_OPT_BACKGROUND.get()) {
             guiGraphics.fillGradient(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x66000000, 0x66000000);
         }
         guiGraphics.drawString(Minecraft.getInstance().font, this.getMessage(), this.getX() + 1, this.getY() + 1, 0xFFFFFF);
-        if(isHovered() || isFocused()) {
+        if(isHoveredOrFocused()) {
             guiGraphics.renderOutline(this.getX(), this.getY(), this.width, this.height, this.getMessage().getStyle().getColor() == null ? DialogueScreen.BORDER_COLOR : this.getMessage().getStyle().getColor().getValue());
         }
     }
